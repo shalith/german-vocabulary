@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete German Vocabulary Pronunciation Player</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #5d6678;
+      --border: #e4e8f0;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --soft: #eef4ff;
+      --success: #166534;
+      --warning: #92400e;
+      --danger: #b91c1c;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    header {
+      background: linear-gradient(135deg, #172033, #1e3a8a);
+      color: white;
+      padding: 28px 20px;
+    }
+    .header-inner { max-width: 1180px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: clamp(26px, 4vw, 42px); line-height: 1.1; }
+    .subtitle { margin: 0; color: rgba(255,255,255,0.84); font-size: 16px; }
+    main { max-width: 1180px; margin: 0 auto; padding: 20px; }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+      align-items: end;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 13px; color: var(--muted); font-weight: 650; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-12 { grid-column: span 12; }
+    input, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font: inherit;
+      background: white;
+      color: var(--text);
+    }
+    input[type="range"] { padding: 0; accent-color: var(--primary); }
+    .hint, .note { color: var(--muted); font-size: 13px; }
+    .note { margin: 12px 0 0; }
+    .button-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: white;
+      background: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 2px 7px rgba(37,99,235,0.18);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:hover { background: var(--primary-dark); }
+    button:active { transform: translateY(1px); }
+    button.secondary { background: #334155; }
+    button.danger { background: var(--danger); }
+    button.small { padding: 8px 10px; font-size: 12px; border-radius: 10px; }
+    .stats { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .chip {
+      background: var(--soft);
+      border: 1px solid #dbeafe;
+      color: #1e3a8a;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    nav { display: flex; gap: 8px; flex-wrap: wrap; }
+    nav a {
+      text-decoration: none;
+      color: #1e3a8a;
+      background: var(--soft);
+      border: 1px solid #dbeafe;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .vocab-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+    h2 { font-size: 20px; margin: 0; }
+    .table-wrap { overflow-x: auto; width: 100%; }
+    table { width: 100%; border-collapse: collapse; }
+    caption {
+      text-align: left;
+      padding: 12px 16px 4px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+      min-width: 110px;
+    }
+    th { background: #fff; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    tbody tr:hover { background: #f8fafc; }
+    .cell-speak-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 100%;
+      background: transparent;
+      color: inherit;
+      border: 0;
+      box-shadow: none;
+      padding: 4px 5px;
+      margin: -4px -5px;
+      border-radius: 8px;
+      font: inherit;
+      font-weight: 750;
+      text-align: left;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(37,99,235,0.15);
+    }
+    .cell-speak-button:hover { background: #eaf2ff; color: #1d4ed8; }
+    .cell-speak-button:active { transform: none; background: #dbeafe; }
+    .meaning-button { font-weight: 600; color: #334155; }
+    .speaker-hint { opacity: 0.48; font-size: 12px; flex: 0 0 auto; }
+    .speaking-cell { outline: 2px solid #93c5fd; background: #dbeafe !important; }
+    .notes { padding: 12px 16px 16px; color: var(--muted); background: #fff; }
+    .notes p { margin: 6px 0; }
+    .notes strong { color: var(--text); }
+    code { background: #f1f5f9; padding: 2px 5px; border-radius: 6px; }
+    .empty { text-align: center; color: var(--muted); }
+    footer { color: var(--muted); text-align: center; padding: 24px; font-size: 13px; }
+    @media (max-width: 820px) {
+      main { padding: 12px; }
+      .span-3, .span-4, .span-5, .span-12 { grid-column: span 12; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+      th, td { padding: 10px 10px; min-width: 125px; }
+      button { padding: 9px 10px; font-size: 13px; }
+      .cell-speak-button { padding: 7px 6px; margin: -7px -6px; min-height: 34px; }
+      .button-row button { flex: 1 1 auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <h1>Complete German Vocabulary Pronunciation Player</h1>
+      <p class="subtitle">Updated with your newest full vocabulary list. Search the bank and tap/click German words or English meanings to hear the German pronunciation. You can also play German only, German → English, or English → German with a short pause.</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="panel">
+      <div class="controls">
+        <div class="field span-4">
+          <label for="searchBox">Search German / meaning</label>
+          <input id="searchBox" type="search" placeholder="Example: Termin, Montag, schlafen, Frühstück" />
+        </div>
+        <div class="field span-4">
+          <label for="voiceSelect">German voice</label>
+          <select id="voiceSelect"></select>
+        </div>
+        <div class="field span-3">
+          <label for="rate">Speed: <span id="rateValue">0.75x</span></label>
+          <input id="rate" type="range" min="0.3" max="1.5" step="0.05" value="0.75" />
+          <div class="hint">Recommended: 0.65x–0.85x for learning, 1.0x normal, 1.25x+ for revision.</div>
+        </div>
+        <div class="field span-12">
+          <div class="button-row">
+            <button type="button" onclick="playVisible()">▶ Play Visible Words</button>
+            <button type="button" onclick="playVisibleWithMeaning()">▶ German → English Meaning</button>
+            <button type="button" onclick="playVisibleEnglishFirst()">▶ English → German</button>
+            <button type="button" class="secondary" onclick="speakSingle('Hallo')">🔊 Test Voice</button>
+            <button type="button" class="secondary" onclick="repeatLast()">↻ Repeat Last</button>
+            <button type="button" class="danger" onclick="stopSpeech()">■ Stop</button>
+          </div>
+        </div>
+      </div>
+      <div class="stats">
+        <span class="chip">📚 32 sections</span>
+        <span class="chip">🧾 31 tables</span>
+        <span class="chip">🔤 769 vocabulary rows</span>
+        <span class="chip">🔊 Tap German words or English meanings</span>
+        <span class="chip">🗣️ German-only, German → English, or English → German playback</span>
+        <span class="chip" id="visibleCount">Showing all rows</span>
+      </div>
+      <p class="note">Tip: Tap/click any German word or its English meaning in the table to hear the German pronunciation. Use <strong>German → English Meaning</strong> to hear German first, then English. Use <strong>English → German</strong> to hear the English meaning first, wait briefly, then hear the German pronunciation. For best sound, select a German voice such as <strong>de-DE</strong>, <strong>Google Deutsch</strong>, <strong>Microsoft Katja</strong>, or <strong>Anna</strong>.</p>
+    </div>
+
+    <div class="panel">
+      <strong>Jump to section</strong>
+      <nav id="sectionNav" style="margin-top: 10px;"></nav>
+    </div>
+
+    <div id="content"></div>
+  </main>
+
+  <footer>
+    This page uses the built-in Web Speech API in your browser. No internet connection is needed after opening the file, but available voices depend on your device/browser.
+  </footer>
+
+  <script>
+    const VOCAB_SECTIONS = [{"title": "1. Articles, pronouns, and small grammar words", "tables": [{"caption": "", "headers": ["German", "Meaning", "Note"], "rows": [["der", "the", "masculine article"], ["die", "the", "feminine / plural article"], ["das", "the / this / that", "neuter article"], ["ein", "a / an", "masculine/neuter"], ["eine", "a / an", "feminine"], ["ich", "I", "pronoun"], ["du", "you", "informal singular"], ["er", "he", "pronoun"], ["sie", "she / they", "depends on context"], ["Sie", "you", "formal"], ["ihr", "you all", "informal plural"], ["es", "it", "pronoun"], ["wir", "we", "pronoun"], ["ja", "yes", "answer"], ["nein", "no", "answer"], ["nicht", "not", "negation"], ["kein", "no / not a", "masculine/neuter"], ["keine", "no / not a / none", "feminine/plural"], ["alle", "all", "alle Personen"], ["auch", "also / too", "Ich auch."], ["und", "and", "connector"], ["oder", "or", "connector"], ["aber", "but", "connector"], ["doch", "on the contrary / but yes", "useful response word"], ["ab", "from", "time/place start"], ["ab wann", "from when", "time question"], ["am", "on / at", "am Sonntag, am Morgen"], ["in", "in", "preposition"], ["aus", "from", "preposition"], ["mit", "with", "preposition"], ["ohne", "without", "preposition"], ["von", "from / of", "preposition"], ["um", "at / around", "time/location word"], ["bis", "until", "bis morgen"], ["nach", "after / to", "nach Hause, nach dem Essen"], ["vor", "before", "time word"], ["zu", "too / to", "zu laut = too loud"], ["hier", "here", "adverb"], ["da", "there", "da sein = to be there"], ["daneben", "next to it/that", "location word"], ["draußen", "outside", "location"], ["drinnen", "inside", "location"], ["allein / alleine", "alone", "both common"], ["leider", "unfortunately", "useful word"], ["heute", "today", "time word"], ["morgen", "tomorrow", "also “morning” when der Morgen"], ["übermorgen", "day after tomorrow", "time word"], ["gestern", "yesterday", "time word"], ["vorgestern", "day before yesterday", "time word"], ["jetzt", "now", "time word"], ["bald", "soon", "time word"], ["danach", "after that", "sequence word"], ["dann", "then", "sequence word"], ["zuerst", "first", "sequence word"], ["erst", "first / only / just", "context decides"], ["schon", "already", "time/adverb"], ["noch", "still", "still raining, still asleep"], ["nur", "only / just", "adverb"], ["immer", "always", "frequency"], ["fast immer", "almost always", "frequency"], ["meist / meistens", "mostly / usually", "frequency"], ["manchmal", "sometimes", "frequency"], ["oft", "often", "frequency"], ["selten", "seldom / rarely", "frequency"], ["nie", "never", "frequency"], ["normalerweise", "normally", "frequency"], ["vielleicht", "maybe / perhaps", "useful word"], ["weg", "gone / away", "Er ist weg."], ["wieder", "again", "adverb"], ["bar", "in cash", "payment word"], ["zusammen", "together", "payment/group word"], ["getrennt", "separate / separately", "payment word"]]}], "notes": []}, {"title": "2. Possessive and pointing words", "tables": [{"caption": "", "headers": ["German", "Meaning", "Simple example"], "rows": [["mein / meine", "my", "mein Name, meine Tasche"], ["dein / deine", "your", "informal"], ["sein / seine", "his / its", "sein Auto, seine Tasche"], ["unser / unsere", "our", "unser Haus"], ["euer / eure", "your / yours", "informal plural"], ["ihr / ihre", "her / their", "context decides"], ["Ihr / Ihre", "your", "formal"], ["dieser / diese / dieses", "this", "changes by noun gender"], ["nächster / nächste / nächstes", "next", "changes by noun gender"], ["anderer / andere / anderes", "other / another", "changes by noun gender"]]}], "notes": []}, {"title": "3. Question words", "tables": [{"caption": "", "headers": ["German", "Meaning", "Example"], "rows": [["wer", "who", "Wer bist du?"], ["was", "what", "Was ist das?"], ["wie", "how / as", "Wie heißt du? / wie = as"], ["wo", "where", "Wo wohnst du?"], ["woher", "from where", "Woher kommst du?"], ["warum", "why", "Warum?"], ["wann", "when", "Wann kommst du?"], ["wie viel", "how much", "Wie viel kostet das?"], ["wie viele", "how many", "Wie viele Personen?"], ["ab wann", "from when", "Ab wann hast du Zeit?"]]}], "notes": []}, {"title": "4. Numbers", "tables": [{"caption": "", "headers": ["German", "Number", "English"], "rows": [["null", "0", "zero"], ["eins", "1", "one"], ["zwei", "2", "two"], ["drei", "3", "three"], ["vier", "4", "four"], ["fünf", "5", "five"], ["sechs", "6", "six"], ["sieben", "7", "seven"], ["acht", "8", "eight"], ["neun", "9", "nine"], ["zehn", "10", "ten"], ["elf", "11", "eleven"], ["zwölf", "12", "twelve"], ["zwanzig", "20", "twenty"], ["dreißig", "30", "thirty"], ["vierzig", "40", "forty"], ["fünfzig", "50", "fifty"], ["sechzig", "60", "sixty"], ["siebzig", "70", "seventy"], ["achtzig", "80", "eighty"], ["neunzig", "90", "ninety"], ["einhundert", "100", "one hundred"], ["einhunderteins", "101", "one hundred and one"], ["zweihundert", "200", "two hundred"], ["zweihundertzwölf", "212", "two hundred and twelve"], ["dreihundert", "300", "three hundred"], ["dreihundertdreiundzwanzig", "323", "three hundred and twenty-three"], ["vierhundert", "400", "four hundred"], ["vierhundertvierunddreißig", "434", "four hundred and thirty-four"], ["fünfhundert", "500", "five hundred"], ["fünfhundertfünfundvierzig", "545", "five hundred and forty-five"], ["sechshundert", "600", "six hundred"], ["sechshundertsechsundfünfzig", "656", "six hundred and fifty-six"], ["siebenhundert", "700", "seven hundred"], ["siebenhundertsiebenundsechzig", "767", "seven hundred and sixty-seven"], ["achthundert", "800", "eight hundred"], ["achthundertachtundsiebzig", "878", "eight hundred and seventy-eight"], ["neunhundert", "900", "nine hundred"], ["neunhundertneunundachtzig", "989", "nine hundred and eighty-nine"], ["eintausend", "1000", "one thousand"]]}], "notes": ["**Memory tip:**", "German says the small number first:", "**vierunddreißig** = four-and-thirty = 34", "**fünfundvierzig** = five-and-forty = 45"]}, {"title": "5. People, family, and relationships", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["der Mann", "der", "die Männer", "man"], ["die Frau", "die", "die Frauen", "woman"], ["Herr", "—", "—", "Mr"], ["Frau", "—", "—", "Ms/Mrs"], ["die Mama", "die", "die Mamas", "mom / mother"], ["der Papa", "der", "die Papas", "dad"], ["der Vater", "der", "die Väter", "father"], ["die Mutter", "die", "die Mütter", "mother"], ["die Tochter", "die", "die Töchter", "daughter"], ["das Kind", "das", "die Kinder", "child"], ["die Tante", "die", "die Tanten", "aunt"], ["der Onkel", "der", "die Onkel", "uncle"], ["der Opa", "der", "die Opas", "grandpa"], ["die Familie", "die", "die Familien", "family"], ["die Person", "die", "die Personen", "person"], ["der Freund", "der", "die Freunde", "male friend"], ["die Freundin", "die", "die Freundinnen", "female friend"], ["der Bekannte", "der", "die Bekannten", "male acquaintance"], ["die Bekannte", "die", "die Bekannten", "female acquaintance"], ["der Nachbar", "der", "die Nachbarn", "male neighbor"], ["die Nachbarin", "die", "die Nachbarinnen", "female neighbor"], ["der Mitbewohner", "der", "die Mitbewohner", "male roommate / flatmate"], ["die Mitbewohnerin", "die", "die Mitbewohnerinnen", "female roommate / flatmate"], ["der Deutsche", "der", "die Deutschen", "German person, male"], ["die Deutsche", "die", "die Deutschen", "German person, female"], ["der Europäer", "der", "die Europäer", "European, male"], ["die Europäerin", "die", "die Europäerinnen", "European, female"]]}], "notes": []}, {"title": "6. Jobs, school roles, and people", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["der Arzt", "der", "die Ärzte", "male doctor"], ["die Ärztin", "die", "die Ärztinnen", "female doctor"], ["der Babysitter", "der", "die Babysitter", "male babysitter"], ["die Babysitterin", "die", "die Babysitterinnen", "female babysitter"], ["der Student", "der", "die Studenten", "male university student"], ["die Studentin", "die", "die Studentinnen", "female university student"], ["der Schüler", "der", "die Schüler", "male pupil / school student"], ["die Schülerin", "die", "die Schülerinnen", "female pupil / school student"], ["der Lehrer", "der", "die Lehrer", "male teacher"], ["die Lehrerin", "die", "die Lehrerinnen", "female teacher"], ["der Deutschlehrer", "der", "die Deutschlehrer", "male German teacher"], ["die Deutschlehrerin", "die", "die Deutschlehrerinnen", "female German teacher"], ["der Kursteilnehmer", "der", "die Kursteilnehmer", "male course participant"], ["die Kursteilnehmerin", "die", "die Kursteilnehmerinnen", "female course participant"], ["der Pilot", "der", "die Piloten", "male pilot"], ["die Pilotin", "die", "die Pilotinnen", "female pilot"], ["der Tourist", "der", "die Touristen", "male tourist"], ["die Touristin", "die", "die Touristinnen", "female tourist"], ["der Taxifahrer", "der", "die Taxifahrer", "male taxi driver"], ["die Taxifahrerin", "die", "die Taxifahrerinnen", "female taxi driver"], ["der Polizist", "der", "die Polizisten", "male police officer"], ["die Polizistin", "die", "die Polizistinnen", "female police officer"], ["der Kellner", "der", "die Kellner", "waiter / server"], ["die Kellnerin", "die", "die Kellnerinnen", "waitress / server"], ["der Vegetarier", "der", "die Vegetarier", "male vegetarian"], ["die Vegetarierin", "die", "die Vegetarierinnen", "female vegetarian"], ["der Mieter", "der", "die Mieter", "male tenant / renter"], ["die Mieterin", "die", "die Mieterinnen", "female tenant / renter"], ["der Gast", "der", "die Gäste", "guest"], ["der Interessent", "der", "die Interessenten", "male interested/prospective person"], ["die Interessentin", "die", "die Interessentinnen", "female interested/prospective person"]]}], "notes": ["**Memory tip:** female job/person words often end with **-in**:", "**der Arzt → die Ärztin**", "**der Lehrer → die Lehrerin**", "**der Schüler → die Schülerin**"]}, {"title": "7. Names, address, and personal information", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["der Name", "der", "die Namen", "name"], ["der Vorname", "der", "die Vornamen", "first name"], ["der Familienname", "der", "die Familiennamen", "family name / surname"], ["der Nachname", "der", "die Nachnamen", "last name / family name"], ["die Nummer", "die", "die Nummern", "number"], ["die Telefonnummer", "die", "die Telefonnummern", "telephone number"], ["die Handynummer", "die", "die Handynummern", "mobile number"], ["die Passnummer", "die", "die Passnummern", "passport number"], ["die Reisepassnummer", "die", "die Reisepassnummern", "passport number"], ["die Adresse", "die", "die Adressen", "address"], ["die Postleitzahl", "die", "die Postleitzahlen", "postal code / zip code"], ["die Hausnummer", "die", "die Hausnummern", "house number"], ["der Wohnort", "der", "die Wohnorte", "place/city of residence"], ["das Heimatland", "das", "die Heimatländer", "homeland"], ["das Land", "das", "die Länder", "country"]]}], "notes": []}, {"title": "8. Countries, cities, and languages", "tables": [{"caption": "", "headers": ["German", "Article", "Meaning", "Note"], "rows": [["Berlin", "usually no article", "Berlin", "city"], ["Deutschland", "usually no article", "Germany", "country"], ["Spanien", "usually no article", "Spain", "country"], ["Deutsch", "usually no article", "German language", "Ich spreche Deutsch."], ["die Sprache", "die", "language", "die Sprachen"], ["der Sprachkurs", "der", "language course", "die Sprachkurse"], ["der Deutschkurs", "der", "German course", "die Deutschkurse"], ["der Deutschunterricht", "der", "German class", "usually singular"], ["die Sprachschule", "die", "language school", "die Sprachschulen"]]}], "notes": []}, {"title": "9. City, official places, and buildings", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["die Bank", "die", "die Banken", "bank"], ["das Büro", "das", "die Büros", "office"], ["das Amt", "das", "die Ämter", "government office / authority"], ["das Fundbüro", "das", "die Fundbüros", "lost and found"], ["der Flughafen", "der", "die Flughäfen", "airport"], ["das Hotel", "das", "die Hotels", "hotel"], ["das Hostel", "das", "die Hostels", "hostel"], ["die Jugendherberge", "die", "die Jugendherbergen", "youth hostel"], ["das Hochhaus", "das", "die Hochhäuser", "high-rise building"], ["das Kino", "das", "die Kinos", "cinema"], ["das Konzert", "das", "die Konzerte", "concert"], ["das Museum", "das", "die Museen", "museum"], ["das Restaurant", "das", "die Restaurants", "restaurant"], ["der Supermarkt", "der", "die Supermärkte", "supermarket"], ["das Theater", "das", "die Theater", "theater"], ["die Universität", "die", "die Universitäten", "university"], ["die Uni", "die", "die Unis", "university"], ["das Zentrum", "das", "die Zentren", "city center"], ["die Straße", "die", "die Straßen", "street / road"], ["die Schule", "die", "die Schulen", "school"], ["die Polizei", "die", "usually singular", "police / police station"], ["der Zoo", "der", "die Zoos", "zoo"], ["in der Stadt", "phrase", "—", "in the city"], ["auf dem Land", "phrase", "—", "in the country / countryside"]]}], "notes": []}, {"title": "10. Home, apartment, and rooms", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["das Haus", "das", "die Häuser", "house"], ["die Wohnung", "die", "die Wohnungen", "apartment"], ["das Zimmer", "das", "die Zimmer", "room"], ["das Wohnzimmer", "das", "die Wohnzimmer", "living room"], ["das Schlafzimmer", "das", "die Schlafzimmer", "bedroom"], ["das Kinderzimmer", "das", "die Kinderzimmer", "child’s room"], ["das Arbeitszimmer", "das", "die Arbeitszimmer", "office / study"], ["das Bad", "das", "die Bäder", "bathroom"], ["das Badezimmer", "das", "die Badezimmer", "bathroom"], ["die Küche", "die", "die Küchen", "kitchen"], ["der Flur", "der", "die Flure", "hallway"], ["der Keller", "der", "die Keller", "cellar / basement"], ["die Terrasse", "die", "die Terrassen", "terrace / patio"], ["der Balkon", "der", "die Balkons / Balkone", "balcony"], ["der Garten", "der", "die Gärten", "garden"], ["die Garage", "die", "die Garagen", "garage"], ["die WG", "die", "die WGs", "shared apartment / flatshare"], ["die Wohngemeinschaft", "die", "die Wohngemeinschaften", "shared apartment"], ["die Miete", "die", "die Mieten", "rent"], ["der Umzug", "der", "die Umzüge", "move / relocation"], ["der Quadratmeter", "der", "die Quadratmeter", "square meter"], ["der Platz", "der", "usually singular", "space / room"]]}], "notes": []}, {"title": "11. Furniture and household items", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["das Möbel", "das", "die Möbel", "furniture / piece of furniture"], ["das Bett", "das", "die Betten", "bed"], ["das Sofa", "das", "die Sofas", "sofa / couch"], ["die Couch", "die", "die Couches / Couchen", "couch"], ["der Sessel", "der", "die Sessel", "armchair / easy chair"], ["der Stuhl", "der", "die Stühle", "chair"], ["der Bürostuhl", "der", "die Bürostühle", "office chair"], ["der Schreibtischstuhl", "der", "die Schreibtischstühle", "desk chair"], ["der Tisch", "der", "die Tische", "table"], ["der Schreibtisch", "der", "die Schreibtische", "desk"], ["der Nachttisch", "der", "die Nachttische", "bedside table"], ["der Schrank", "der", "die Schränke", "cabinet / wardrobe"], ["der Kleiderschrank", "der", "die Kleiderschränke", "wardrobe / closet"], ["das Regal", "das", "die Regale", "shelf / rack"], ["das Bücherregal", "das", "die Bücherregale", "bookcase / bookshelf"], ["der Spiegel", "der", "die Spiegel", "mirror"], ["die Lampe", "die", "die Lampen", "lamp"], ["die Stehlampe", "die", "die Stehlampen", "floor lamp"], ["die Heizung", "die", "die Heizungen", "heating / heater"], ["der Kühlschrank", "der", "die Kühlschränke", "refrigerator / fridge"], ["die Spüle", "die", "die Spülen", "kitchen sink"], ["der Herd", "der", "die Herde", "stove"], ["die Waschmaschine", "die", "die Waschmaschinen", "washing machine"], ["der Fernseher", "der", "die Fernseher", "television"], ["der Teppich", "der", "die Teppiche", "carpet"], ["die Gardine", "die", "die Gardinen", "curtain / drapes"], ["das Kissen", "das", "die Kissen", "cushion / pillow"], ["das Fenster", "das", "die Fenster", "window"], ["die Armbanduhr", "die", "die Armbanduhren", "wristwatch"], ["die Uhr", "die", "die Uhren", "clock / watch"], ["der Föhn", "der", "die Föhne", "hair dryer"], ["das Handtuch", "das", "die Handtücher", "hand towel"], ["die Unterhose", "die", "die Unterhosen", "underwear / underpants"]]}], "notes": []}, {"title": "12. Transport, devices, and travel", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["der Bus", "der", "die Busse", "bus"], ["das Taxi", "das", "die Taxis", "taxi"], ["das Auto", "das", "die Autos", "car"], ["das Fahrrad", "das", "die Fahrräder", "bicycle"], ["das Rad", "das", "die Räder", "bike / wheel"], ["das Flugzeug", "das", "die Flugzeuge", "airplane"], ["der Zug", "der", "die Züge", "train"], ["das Telefon", "das", "die Telefone", "telephone"], ["das Handy", "das", "die Handys", "mobile phone"], ["das Radio", "das", "die Radios", "radio"], ["der Pass", "der", "die Pässe", "passport"], ["der Schlüssel", "der", "die Schlüssel", "key"], ["der Aufzug", "der", "die Aufzüge", "elevator / lift"], ["der Urlaub", "der", "die Urlaube", "vacation / holiday"]]}], "notes": []}, {"title": "13. School, learning, and office items", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["das Buch", "das", "die Bücher", "book"], ["das Wörterbuch", "das", "die Wörterbücher", "dictionary"], ["der Bleistift", "der", "die Bleistifte", "pencil"], ["der Stift", "der", "die Stifte", "pen"], ["der Radiergummi", "der", "die Radiergummis", "eraser"], ["das Radiergummi", "das", "die Radiergummis", "eraser"], ["der Notizblock", "der", "die Notizblöcke", "notebook"], ["das Papier", "das", "usually singular", "paper"], ["der Zettel", "der", "die Zettel", "piece of paper / note"], ["der Ordner", "der", "die Ordner", "folder / binder"], ["die Tafel", "die", "die Tafeln", "board / chalkboard"], ["der Text", "der", "die Texte", "text"], ["der Satz", "der", "die Sätze", "sentence"], ["das Wort", "das", "die Wörter", "word"], ["die Hausaufgabe", "die", "die Hausaufgaben", "homework"], ["die Übung", "die", "die Übungen", "exercise"], ["die Pause", "die", "die Pausen", "break"], ["die Nachricht", "die", "die Nachrichten", "message"], ["die Bestellung", "die", "die Bestellungen", "order"], ["die Anzeige", "die", "die Anzeigen", "ad / advertisement"], ["die Brille", "die", "die Brillen", "eyeglasses"], ["das Brillenetui", "das", "die Brillenetuis", "glasses case"], ["der Unterricht", "der", "usually singular", "lesson / class"], ["das Training", "das", "die Trainings", "training / workout / practice"], ["das Volleyballtraining", "das", "die Volleyballtrainings", "volleyball practice"]]}], "notes": []}, {"title": "14. Food and drink", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["das Essen", "das", "die Essen", "food / meal"], ["der Kaffee", "der", "die Kaffees", "coffee"], ["die Pizza", "die", "die Pizzen / Pizzas", "pizza"], ["die Spaghetti", "die", "only plural", "spaghetti"], ["der Salat", "der", "die Salate", "salad / lettuce"], ["der Schinken", "der", "die Schinken", "ham"], ["das Sushi", "das", "usually singular", "sushi"], ["der Fisch", "der", "die Fische", "fish"], ["der Thunfisch", "der", "die Thunfische", "tuna fish"], ["die Roulade", "die", "die Rouladen", "roulade / braised meat roll"], ["die Suppe", "die", "die Suppen", "soup"], ["die Tomate", "die", "die Tomaten", "tomato"], ["die Ananas", "die", "die Ananas / Ananasse", "pineapple"], ["der Apfel", "der", "die Äpfel", "apple"], ["das Gemüse", "das", "usually singular", "vegetables"], ["das Müsli", "das", "die Müslis", "granola / cereal"], ["die Schokoladencreme", "die", "die Schokoladencremes", "chocolate spread"], ["der Käse", "der", "usually singular", "cheese"], ["der Mozzarella", "der", "usually singular", "mozzarella"], ["die Salami", "die", "die Salamis", "salami"], ["der Zucker", "der", "usually singular", "sugar"], ["das Eis", "das", "usually singular", "ice / ice cream"], ["das Getränk", "das", "die Getränke", "drink"], ["das Wasser", "das", "usually singular", "water"], ["der Saft", "der", "die Säfte", "juice"], ["der Apfelsaft", "der", "die Apfelsäfte", "apple juice"], ["der Orangensaft", "der", "die Orangensäfte", "orange juice"], ["die Limonade", "die", "die Limonaden", "lemonade / soft drink"], ["die Limo", "die", "die Limos", "short form of Limonade"], ["die Milch", "die", "usually singular", "milk"], ["der Tee", "der", "die Tees", "tea"], ["der Wein", "der", "die Weine", "wine"], ["das Bier", "das", "die Biere", "beer"], ["die Cola", "die", "die Colas", "cola / soda"], ["die Pommes frites", "die", "only plural", "French fries"], ["das Frühstück", "das", "die Frühstücke", "breakfast"], ["das Mittagessen", "das", "die Mittagessen", "lunch"], ["das Abendessen", "das", "die Abendessen", "dinner"], ["das Mittagsangebot", "das", "die Mittagsangebote", "lunch dish / lunch menu"], ["der Hunger", "der", "usually singular", "hunger"], ["der Durst", "der", "usually singular", "thirst"]]}], "notes": []}, {"title": "15. Restaurant, payment, and ordering words", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["die Speisekarte", "die", "die Speisekarten", "menu"], ["die Rechnung", "die", "die Rechnungen", "bill / invoice"], ["das Trinkgeld", "das", "die Trinkgelder", "tip"], ["der Euro", "der", "die Euros", "euro"], ["der Cent", "der", "die Cents", "cent"], ["die Reservierung", "die", "die Reservierungen", "reservation"]]}, {"caption": "Useful phrases", "headers": ["German", "Meaning"], "rows": [["Eine Pizza bitte!", "One pizza, please!"], ["Sonst noch etwas?", "Anything else?"], ["Was gibt es denn?", "What do you have? / What is there?"], ["Was kostet ...?", "How much does ... cost?"], ["Wie viel kostet ...?", "How much is ...?"], ["Wie viel Euro macht das?", "How many euros is that in total?"], ["Das macht ...", "That will be ..."], ["Das macht zusammen ...", "That will be ... in total"], ["Das stimmt so.", "Keep the change / That’s fine"], ["Zahlen Sie bar oder mit Karte?", "Will you pay in cash or by card?"], ["Zahlen Sie zusammen oder getrennt?", "Will you pay together or separately?"], ["Du bist eingeladen!", "It’s my treat / It’s on me"], ["Das passt gut.", "That works / That’s fine"], ["Das geht.", "That works / That’s OK"]]}], "notes": []}, {"title": "16. General objects and daily nouns", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["das Beispiel", "das", "die Beispiele", "example"], ["der Buchstabe", "der", "die Buchstaben", "letter of alphabet"], ["der Computer", "der", "die Computer", "computer"], ["die E-Mail", "die", "die E-Mails", "email"], ["die Hilfe", "die", "die Hilfen", "help"], ["die Information", "die", "die Informationen", "information"], ["der Kurs", "der", "die Kurse", "course"], ["die Arbeit", "die", "usually singular", "work / job"], ["das Problem", "das", "die Probleme", "problem"], ["die Lösung", "die", "die Lösungen", "solution"], ["die Tasche", "die", "die Taschen", "bag"], ["die Toilette", "die", "die Toiletten", "toilet"], ["das Foto", "das", "die Fotos", "photo"], ["die Einladung", "die", "die Einladungen", "invitation"], ["der Geburtstag", "der", "die Geburtstage", "birthday"], ["das Geschenk", "das", "die Geschenke", "gift / present"], ["die Zahl", "die", "die Zahlen", "number"], ["der Dialog", "der", "die Dialoge", "dialogue / conversation"], ["die Party", "die", "die Partys", "party"], ["das Internet", "das", "usually singular", "internet"], ["das T-Shirt", "das", "die T-Shirts", "T-shirt"], ["das Bild", "das", "die Bilder", "picture"], ["die Natur", "die", "usually singular", "nature"], ["der Termin", "der", "die Termine", "appointment"], ["die Panne", "die", "die Pannen", "breakdown / glitch / malfunction"], ["der Stau", "der", "die Staus", "traffic jam"], ["das Treffen", "das", "die Treffen", "meeting"], ["die Verspätung", "die", "die Verspätungen", "delay / late arrival"], ["die Langeweile", "die", "usually singular", "boredom"], ["die Öffnungszeit", "die", "die Öffnungszeiten", "opening hours / business hours"], ["der Kalender", "der", "die Kalender", "calendar"], ["das Datum", "das", "die Daten", "date"]]}], "notes": []}, {"title": "17. Time, clock, days, months, and schedule", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["die Uhr", "die", "die Uhren", "clock / watch"], ["Uhr", "—", "—", "o’clock"], ["die Zeit", "die", "usually singular", "time"], ["der Tag", "der", "die Tage", "day"], ["die Woche", "die", "die Wochen", "week"], ["das Wochenende", "das", "die Wochenenden", "weekend"], ["der Morgen", "der", "die Morgen", "morning"], ["der Vormittag", "der", "die Vormittage", "morning / before noon"], ["der Mittag", "der", "die Mittage", "noon / midday"], ["der Nachmittag", "der", "die Nachmittage", "afternoon"], ["der Abend", "der", "die Abende", "evening"], ["die Nacht", "die", "die Nächte", "night"], ["die Mittagspause", "die", "die Mittagspausen", "lunch break"], ["die Minute", "die", "die Minuten", "minute"], ["die Stunde", "die", "die Stunden", "hour"], ["die Viertelstunde", "die", "die Viertelstunden", "quarter of an hour"], ["die Dreiviertelstunde", "die", "die Dreiviertelstunden", "three-quarters of an hour / 45 minutes"], ["halbe Stunde", "phrase", "—", "half an hour"], ["der Monat", "der", "die Monate", "month"], ["das Jahr", "das", "die Jahre", "year"], ["der Montag", "der", "die Montage", "Monday"], ["der Dienstag", "der", "die Dienstage", "Tuesday"], ["der Mittwoch", "der", "die Mittwoche", "Wednesday"], ["der Donnerstag", "der", "die Donnerstage", "Thursday"], ["der Freitag", "der", "die Freitage", "Friday"], ["der Samstag", "der", "die Samstage", "Saturday"], ["der Sonntag", "der", "die Sonntage", "Sunday"], ["der Januar", "der", "usually singular", "January"], ["der Februar", "der", "usually singular", "February"], ["der März", "der", "usually singular", "March"], ["der April", "der", "usually singular", "April"], ["der Mai", "der", "usually singular", "May"], ["der Juni", "der", "usually singular", "June"], ["der Juli", "der", "usually singular", "July"], ["der August", "der", "usually singular", "August"], ["der September", "der", "usually singular", "September"], ["der Oktober", "der", "usually singular", "October"], ["der November", "der", "usually singular", "November"], ["der Dezember", "der", "usually singular", "December"], ["der Frühdienst", "der", "die Frühdienste", "early shift"]]}, {"caption": "Useful time phrases", "headers": ["German", "Meaning"], "rows": [["Es ist 09:00 Uhr.", "It is 9 o’clock"], ["Wie spät ist es?", "What time is it?"], ["Wie viel Uhr ist es?", "What time is it?"], ["Der Wievielte ist heute?", "What is the date today?"], ["Heute ist der ...", "Today is the ..."], ["am Morgen", "in the morning"], ["morgens", "in the mornings / every morning"], ["am Sonntag", "on Sunday"], ["am Wochenende", "on the weekend"], ["jeden Tag", "every day"], ["abends", "in the evening"], ["mittags", "at noon / at midday"], ["nachmittags", "in the afternoon / afternoons"], ["vormittags", "mornings / in the morning regularly"], ["kurz nach", "shortly after"], ["kurz vor", "shortly before"], ["Viertel nach", "quarter past"], ["Viertel vor", "quarter to"], ["halb", "half, used in time"], ["zweimal", "twice"], ["dreimal", "three times"], ["den ganzen Tag", "the entire day"], ["ein paar Tage", "a few days"], ["später", "later"]]}], "notes": []}, {"title": "18. Sports, hobbies, and culture", "tables": [{"caption": "", "headers": ["German", "Article", "Plural", "Meaning"], "rows": [["das Hobby", "das", "die Hobbys", "hobby"], ["der Sport", "der", "usually singular", "sport / exercise"], ["der Fußball", "der", "usually singular", "soccer / football"], ["das Tennis", "das", "usually singular", "tennis"], ["das Schwimmbad", "das", "die Schwimmbäder", "swimming pool"], ["die Gitarre", "die", "die Gitarren", "guitar"], ["die Flöte", "die", "die Flöten", "flute"], ["die Musik", "die", "usually singular", "music"], ["die Kultur", "die", "usually singular", "culture"], ["der Film", "der", "die Filme", "movie / film"], ["Spaß haben", "phrase", "—", "to have fun"]]}], "notes": []}, {"title": "19. Verbs", "tables": [{"caption": "", "headers": ["German verb", "Meaning", "Present", "Past", "Perfect"], "rows": [["sein", "to be", "ist", "war", "ist gewesen"], ["da sein", "to be there / present", "ist da", "war da", "ist da gewesen"], ["haben", "to have", "hat", "hatte", "hat gehabt"], ["Zeit haben", "to have time", "hat", "hatte", "hat gehabt"], ["geöffnet haben", "to be open", "hat", "hatte", "hat gehabt"], ["geschlossen haben", "to be closed", "hat", "hatte", "hat gehabt"], ["heißen", "to be called / named", "heißt", "hieß", "hat geheißen"], ["kommen", "to come", "kommt", "kam", "ist gekommen"], ["mitkommen", "to come along", "kommt mit", "kam mit", "ist mitgekommen"], ["gehen", "to go / walk", "geht", "ging", "ist gegangen"], ["rausgehen", "to go out", "geht raus", "ging raus", "ist rausgegangen"], ["ausgehen", "to go out", "geht aus", "ging aus", "ist ausgegangen"], ["nach draußen gehen", "to go outside", "geht", "ging", "ist gegangen"], ["nach Hause gehen", "to go home", "geht", "ging", "ist gegangen"], ["ins Bett gehen", "to go to bed", "geht", "ging", "ist gegangen"], ["ins Kino gehen", "to go to the movies", "geht", "ging", "ist gegangen"], ["ins Theater gehen", "to go to the theater", "geht", "ging", "ist gegangen"], ["wohnen", "to live", "wohnt", "wohnte", "hat gewohnt"], ["leben", "to live / be alive", "lebt", "lebte", "hat gelebt"], ["können", "can / to be able to", "kann", "konnte", "—"], ["brauchen", "to need", "braucht", "brauchte", "hat gebraucht"], ["geben", "to give", "gibt", "gab", "hat gegeben"], ["lernen", "to learn", "lernt", "lernte", "hat gelernt"], ["lesen", "to read", "liest", "las", "hat gelesen"], ["vorlesen", "to read aloud / read to someone", "liest vor", "las vor", "hat vorgelesen"], ["helfen", "to help", "hilft", "half", "hat geholfen"], ["hoffen", "to hope", "hofft", "hoffte", "hat gehofft"], ["machen", "to do / make", "macht", "machte", "hat gemacht"], ["Frühstück machen", "to make breakfast", "macht", "machte", "hat gemacht"], ["funktionieren", "to work / function", "funktioniert", "funktionierte", "hat funktioniert"], ["arbeiten", "to work", "arbeitet", "arbeitete", "hat gearbeitet"], ["sprechen", "to speak", "spricht", "sprach", "hat gesprochen"], ["mit jemandem sprechen", "to speak with someone", "spricht", "sprach", "hat gesprochen"], ["telefonieren", "to call / speak on phone", "telefoniert", "telefonierte", "hat telefoniert"], ["anrufen", "to call someone", "ruft an", "rief an", "hat angerufen"], ["suchen", "to search / look for", "sucht", "suchte", "hat gesucht"], ["buchstabieren", "to spell", "buchstabiert", "buchstabierte", "hat buchstabiert"], ["studieren", "to study at university", "studiert", "studierte", "hat studiert"], ["unterrichten", "to teach / instruct", "unterrichtet", "unterrichtete", "hat unterrichtet"], ["üben", "to practice", "übt", "übte", "hat geübt"], ["wiederholen", "to repeat / revise", "wiederholt", "wiederholte", "hat wiederholt"], ["fliegen", "to fly", "fliegt", "flog", "ist geflogen"], ["feiern", "to celebrate", "feiert", "feierte", "hat gefeiert"], ["hören", "to hear / listen", "hört", "hörte", "hat gehört"], ["verlieren", "to lose", "verliert", "verlor", "hat verloren"], ["antworten", "to answer", "antwortet", "antwortete", "hat geantwortet"], ["fragen", "to ask", "fragt", "fragte", "hat gefragt"], ["wissen", "to know", "weiß", "wusste", "hat gewusst"], ["glauben", "to believe / think", "glaubt", "glaubte", "hat geglaubt"], ["denken", "to think", "denkt", "dachte", "hat gedacht"], ["verstehen", "to understand", "versteht", "verstand", "hat verstanden"], ["kosten", "to cost", "kostet", "kostete", "hat gekostet"], ["fehlen", "to be missing", "fehlt", "fehlte", "hat gefehlt"], ["schreiben", "to write", "schreibt", "schrieb", "hat geschrieben"], ["mitschreiben", "to take notes", "schreibt mit", "schrieb mit", "hat mitgeschrieben"], ["korrigieren", "to correct", "korrigiert", "korrigierte", "hat korrigiert"], ["posten", "to post", "postet", "postete", "hat gepostet"], ["sagen", "to say / tell", "sagt", "sagte", "hat gesagt"], ["absagen", "to cancel", "sagt ab", "sagte ab", "hat abgesagt"], ["zahlen", "to pay", "zahlt", "zahlte", "hat gezahlt"], ["bezahlen", "to pay something", "bezahlt", "bezahlte", "hat bezahlt"], ["bestellen", "to order", "bestellt", "bestellte", "hat bestellt"], ["reservieren", "to reserve", "reserviert", "reservierte", "hat reserviert"], ["warten", "to wait", "wartet", "wartete", "hat gewartet"], ["essen", "to eat", "isst", "aß", "hat gegessen"], ["frühstücken", "to eat breakfast", "frühstückt", "frühstückte", "hat gefrühstückt"], ["trinken", "to drink", "trinkt", "trank", "hat getrunken"], ["kochen", "to cook", "kocht", "kochte", "hat gekocht"], ["lieben", "to love / like", "liebt", "liebte", "hat geliebt"], ["nehmen", "to take / have", "nimmt", "nahm", "hat genommen"], ["möchten", "would like / want", "möchte", "wollte", "—"], ["kennen", "to know someone/something", "kennt", "kannte", "hat gekannt"], ["putzen", "to clean", "putzt", "putzte", "hat geputzt"], ["Zähne putzen", "to brush one’s teeth", "putzt", "putzte", "hat geputzt"], ["schlafen", "to sleep", "schläft", "schlief", "hat geschlafen"], ["ausschlafen", "to sleep in", "schläft aus", "schlief aus", "hat ausgeschlafen"], ["sich duschen", "to shower", "duscht sich", "duschte sich", "hat sich geduscht"], ["stehen", "to stand / be", "steht", "stand", "hat gestanden"], ["aufstehen", "to get up", "steht auf", "stand auf", "ist aufgestanden"], ["finden", "to find", "findet", "fand", "hat gefunden"], ["sehen", "to see", "sieht", "sah", "hat gesehen"], ["fernsehen", "to watch TV", "sieht fern", "sah fern", "hat ferngesehen"], ["sitzen", "to sit", "sitzt", "saß", "hat gesessen"], ["sich etwas teilen", "to share something", "teilt sich", "teilte sich", "hat sich geteilt"], ["umziehen", "to move house/city", "zieht um", "zog um", "ist umgezogen"], ["aufräumen", "to clean up / tidy up", "räumt auf", "räumte auf", "hat aufgeräumt"], ["einkaufen", "to buy / shop", "kauft ein", "kaufte ein", "hat eingekauft"], ["besuchen", "to visit someone/something", "besucht", "besuchte", "hat besucht"], ["beginnen", "to begin / start", "beginnt", "begann", "hat begonnen"], ["anfangen", "to start", "fängt an", "fing an", "hat angefangen"], ["aufhören", "to stop / finish", "hört auf", "hörte auf", "hat aufgehört"], ["vorbereiten", "to prepare", "bereitet vor", "bereitete vor", "hat vorbereitet"], ["waschen", "to wash", "wäscht", "wusch", "hat gewaschen"], ["schwimmen", "to swim", "schwimmt", "schwamm", "ist geschwommen"], ["Fahrrad fahren", "to ride a bike", "fährt", "fuhr", "ist gefahren"], ["treffen", "to meet someone", "trifft", "traf", "hat getroffen"], ["Lust haben", "to feel like / want to", "hat", "hatte", "hat gehabt"], ["Spaß haben", "to have fun", "hat", "hatte", "hat gehabt"]]}], "notes": []}, {"title": "20. Adjectives and describing words", "tables": [{"caption": "", "headers": ["German", "Meaning", "Forms / note"], "rows": [["gut", "good / well", "gut, besser, am besten"], ["besser", "better", "from gut"], ["sehr gut", "very good / very well", "fixed phrase"], ["schön", "nice / beautiful", "schöner, am schönsten"], ["super", "super / great", "casual"], ["langsam", "slow / slowly", "langsamer, am langsamsten"], ["schnell", "fast", "schneller, am schnellsten"], ["früh", "early", "früher, am frühesten"], ["spät", "late", "später, am spätesten"], ["pünktlich", "punctual", "pünktlicher, am pünktlichsten"], ["unpünktlich", "tardy / not punctual", "unpünktlicher, am unpünktlichsten"], ["kurz", "short", "kürzer, am kürzesten"], ["lang", "long", "länger, am längsten"], ["lange", "for a long time", "time adverb"], ["laut", "loud / loudly", "lauter, am lautesten"], ["ruhig", "quiet / calm", "ruhiger, am ruhigsten"], ["modern", "modern", "moderner, am modernsten"], ["voll", "full / filled", "useful for transport/rooms"], ["okay", "okay", "from English"], ["richtig", "correct / right", "opposite of falsch"], ["falsch", "wrong", "opposite of richtig"], ["fertig", "finished", "Ich bin fertig."], ["wichtig", "important", "wichtiger, am wichtigsten"], ["krank", "sick / ill", "kränker, am kränksten"], ["kaputt", "broken", "kaputter, am kaputtesten"], ["frei", "free / open / unoccupied", "useful for rooms/seats"], ["sauber", "clean", "sauberer, am saubersten"], ["dreckig", "dirty", "dreckiger, am dreckigsten"], ["warm", "warm", "wärmer, am wärmsten"], ["dunkel", "dark", "dunkler, am dunkelsten"], ["hell", "light / bright", "heller, am hellsten"], ["bequem", "comfortable", "bequemer, am bequemsten"], ["unbequem", "uncomfortable", "unbequemer, am unbequemsten"], ["gemütlich", "cozy / comfortable", "gemütlicher, am gemütlichsten"], ["ungemütlich", "uncomfortable / unpleasant", "ungemütlicher, am ungemütlichsten"], ["nett", "nice / friendly", "netter, am nettesten"], ["gern", "gladly / like to", "gern, lieber, am liebsten"], ["lieber", "rather / prefer", "Ich möchte lieber Wasser."], ["viel", "much / a lot", "mehr, am meisten"], ["viele", "many", "plural form"], ["wenig", "little / few", "weniger, am wenigsten"], ["willkommen", "welcome", "Herzlich willkommen!"], ["groß", "big / tall", "größer, am größten"], ["klein", "small", "kleiner, am kleinsten"], ["alt", "old", "älter, am ältesten"], ["neu", "new", "neuer, am neuesten"], ["teuer", "expensive", "teurer, am teuersten"], ["billig", "cheap / inexpensive", "billiger, am billigsten"], ["hoch", "high / tall", "höher, am höchsten"], ["rot", "red", "color"], ["weiß", "white", "color"], ["gelb", "yellow", "color"], ["spießig", "square / old-fashioned / conservative", "casual descriptive word"]]}], "notes": []}, {"title": "21. Greetings and goodbye phrases", "tables": [{"caption": "", "headers": ["German", "Meaning"], "rows": [["Hallo!", "Hello!"], ["Hi!", "Hi!"], ["Hey!", "Hey!"], ["Guten Morgen.", "Good morning."], ["Guten Tag.", "Hello / Good day."], ["Guten Abend.", "Good evening."], ["Tschüss.", "Bye."], ["Auf Wiedersehen.", "Goodbye."], ["Auf Wiederhören!", "Goodbye on the phone"], ["Bis bald.", "See you soon."], ["Bis morgen!", "See you tomorrow!"], ["Mach’s gut!", "Take care!"], ["Gute Reise.", "Have a good trip."], ["Viel Glück!", "Good luck!"], ["Herzlich willkommen!", "Welcome!"], ["Komm rein!", "Come in!"], ["Freut mich.", "Pleased to meet you."], ["Viele Grüße", "Best regards"], ["Sorry!", "Sorry!"]]}], "notes": []}, {"title": "22. Polite and common phrases", "tables": [{"caption": "", "headers": ["German", "Meaning"], "rows": [["danke", "thanks"], ["danke schön", "thank you"], ["danke sehr", "thank you very much"], ["Vielen Dank!", "Many thanks!"], ["bitte", "please / here you go / you’re welcome"], ["bitte schön", "here you go / please"], ["Kein Problem.", "No problem."], ["Entschuldigung, ...", "Excuse me, ..."], ["Entschuldigung.", "I’m sorry."], ["Tut mir leid.", "I’m sorry."], ["Keine Ahnung.", "No idea."], ["Ich weiß es nicht.", "I don’t know."], ["Das weiß ich leider nicht.", "Unfortunately, I don’t know."], ["Das geht nicht.", "That doesn’t work."], ["Das geht.", "That works / That’s OK."], ["Das passt gut.", "That works / That’s fine."], ["Das macht nichts.", "That doesn’t matter."], ["Ist schon gut.", "It’s all good / That’s fine."], ["Mir ist schlecht.", "I don’t feel well."], ["Langsam bitte.", "Slowly, please."], ["Noch einmal bitte.", "Again, please."], ["Einen Moment bitte.", "One moment, please."], ["Alles klar!", "All right! / Got it!"], ["Kommt drauf an.", "That depends."], ["Gute Idee.", "Good idea."], ["Ich habe Lust.", "I feel like it / I would enjoy it."], ["Ich habe keine Lust.", "I don’t feel like it."], ["Wollen wir uns nicht duzen?", "Shall we use informal “du” with each other?"], ["zum Beispiel / z. B.", "for example"], ["Wie heißt das auf Deutsch?", "What is that called in German?"], ["Es gibt ...", "There is / there are ..."]]}], "notes": []}, {"title": "23. Introduction and identity sentences", "tables": [{"caption": "", "headers": ["German", "Meaning"], "rows": [["Mein Name ist ...", "My name is ..."], ["Ich heiße Nico.", "My name is Nico."], ["Ich bin ...", "I am ..."], ["Das ist Nico.", "This/that is Nico."], ["Du bist Emma.", "You are Emma."], ["Hier ist ...", "This is ... / Here is ..."], ["Er ist Taxifahrer.", "He is a taxi driver."], ["Sie ist Taxifahrerin.", "She is a taxi driver."], ["Ich habe eine Idee.", "I have an idea."]]}], "notes": []}, {"title": "24. Asking names and spelling", "tables": [{"caption": "", "headers": ["German", "Meaning", "Formality"], "rows": [["Wie heißt du?", "What is your name?", "informal"], ["Wie heißen Sie?", "What is your name?", "formal"], ["Wie ist dein Name?", "What is your name?", "informal"], ["Wie ist Ihr Name?", "What is your name?", "formal"], ["Wer bist du?", "Who are you?", "informal"], ["Wer sind Sie?", "Who are you?", "formal"], ["Wie schreibt man das?", "How do you write/spell that?", "neutral"], ["Bitte buchstabiere das.", "Please spell that.", "informal"], ["Bitte buchstabieren Sie das.", "Please spell that.", "formal"]]}], "notes": []}, {"title": "25. Asking about place, origin, things, and time", "tables": [{"caption": "", "headers": ["German", "Meaning", "Formality"], "rows": [["Wo wohnst du?", "Where do you live?", "informal"], ["Wo wohnen Sie?", "Where do you live?", "formal"], ["Woher kommst du?", "Where are you from?", "informal"], ["Woher kommen Sie?", "Where are you from?", "formal"], ["Wo bist du?", "Where are you?", "informal"], ["Wo ist die Polizei?", "Where is the police station?", "neutral"], ["Was machst du hier?", "What are you doing here?", "informal"], ["Was machen Sie hier?", "What do you do here?", "formal"], ["Was ist das?", "What is that?", "neutral"], ["Wer ist da?", "Who is it? / Who’s there?", "neutral"], ["Wer ist denn das?", "Who is that?", "neutral"], ["Wem gehört das?", "Who does that belong to?", "neutral"], ["Wann?", "When?", "neutral"], ["Ab wann?", "From when?", "neutral"], ["Wie spät ist es?", "What time is it?", "neutral"], ["Wie viel Uhr ist es?", "What time is it?", "neutral"], ["Der Wievielte ist heute?", "What is the date today?", "neutral"], ["Ich komme aus Spanien.", "I am from Spain.", "sentence"], ["Ich wohne in Sevilla.", "I live in Sevilla.", "sentence"], ["Die Polizei ist in der Schreinerstraße.", "The police station is on Schreinerstraße.", "sentence"], ["Wie heißt die Straße?", "What is the name of the street?", "neutral"]]}], "notes": []}, {"title": "26. Phone number, address, and official-office phrases", "tables": [{"caption": "", "headers": ["German", "Meaning", "Formality"], "rows": [["Meine Telefonnummer ist ...", "My telephone number is ...", "neutral"], ["Wie ist deine Telefonnummer?", "What is your telephone number?", "informal"], ["Wie ist Ihre Telefonnummer?", "What is your telephone number?", "formal"], ["Welche Nummer hast du?", "What number do you have?", "informal"], ["Welche Nummer haben Sie?", "What number do you have?", "formal"], ["Wie ist deine Adresse?", "What is your address?", "informal"], ["Wie ist Ihre Adresse?", "What is your address?", "formal"]]}], "notes": []}, {"title": "27. Age and birthday phrases", "tables": [{"caption": "", "headers": ["German", "Meaning"], "rows": [["Wie alt ist Emma?", "How old is Emma?"], ["Wie alt bist du?", "How old are you? informal"], ["Wie alt sind Sie?", "How old are you? formal"], ["Emma ist acht Jahre alt.", "Emma is eight years old."], ["Ich bin 23 Jahre alt.", "I am 23 years old."], ["Ich werde acht Jahre alt.", "I am turning eight years old."], ["Lotte wird acht Jahre alt.", "Lotte is turning eight."]]}], "notes": ["Pattern:", "**Ich bin + number + Jahre alt.**", "Example: **Ich bin 23 Jahre alt.**"]}, {"title": "28. How are you?", "tables": [{"caption": "", "headers": ["German", "Meaning", "Formality"], "rows": [["Wie geht es dir?", "How are you?", "informal"], ["Wie geht es Ihnen?", "How are you?", "formal"], ["Es geht mir gut.", "I’m doing well.", "answer"], ["Mir geht’s gut.", "I’m doing well.", "shorter answer"], ["nicht so gut", "not so good", "answer"], ["Und dir?", "And you?", "informal"], ["Und Ihnen?", "And you?", "formal"]]}], "notes": []}, {"title": "1. Months are masculine", "tables": [], "notes": ["All months use **der**:", "**der Januar, der Februar, der März, der April, der Mai, der Juni, der Juli, der August, der September, der Oktober, der November, der Dezember**", "Example:", "**Heute ist der 5. Mai.** = Today is the 5th of May."]}, {"title": "2. Days of the week are masculine", "tables": [], "notes": ["All days use **der**:", "**der Montag, der Dienstag, der Mittwoch, der Donnerstag, der Freitag, der Samstag, der Sonntag**", "Use **am** for “on”:", "**am Montag** = on Monday", "**am Sonntag** = on Sunday", "**am Wochenende** = on the weekend"]}, {"title": "3. Time expressions", "tables": [{"caption": "", "headers": ["German", "Meaning"], "rows": [["kurz nach", "shortly after"], ["kurz vor", "shortly before"], ["Viertel nach", "quarter past"], ["Viertel vor", "quarter to"], ["halb", "half, used for time"], ["halbe Stunde", "half an hour"], ["Viertelstunde", "quarter of an hour"], ["Dreiviertelstunde", "45 minutes"]]}], "notes": []}, {"title": "4. Best study order now", "tables": [], "notes": ["1. **Months:** Januar to Dezember", "2. **Time words:** Minute, Stunde, Viertelstunde, halbe Stunde", "3. **Time phrases:** kurz nach, kurz vor, Viertel nach, Viertel vor", "4. **Planning words:** Termin, Kalender, Reservierung, Treffen, Verspätung", "5. **Useful phrases:** Das passt gut, Das macht nichts, Ist schon gut, Ich habe Lust, Ich habe keine Lust"]}];
+    const content = document.getElementById('content');
+    const nav = document.getElementById('sectionNav');
+    const searchBox = document.getElementById('searchBox');
+    const voiceSelect = document.getElementById('voiceSelect');
+    const rateInput = document.getElementById('rate');
+    const rateValue = document.getElementById('rateValue');
+    const visibleCount = document.getElementById('visibleCount');
+
+    let visibleSpeakQueue = [];
+    let visibleMeaningQueue = [];
+    let playbackSessionId = 0;
+    let currentUtteranceResolver = null;
+    let lastSpokenText = '';
+    let lastTapAt = 0;
+    let lastTapKey = '';
+
+    function cancelPlayback() {
+      playbackSessionId += 1;
+      if (currentUtteranceResolver) {
+        const resolver = currentUtteranceResolver;
+        currentUtteranceResolver = null;
+        resolver();
+      }
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderInlineMarkdown(value) {
+      return escapeHtml(value)
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>');
+    }
+
+    function cleanForSpeech(value) {
+      return String(value ?? '')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\*\*/g, '')
+        .replace(/`/g, '')
+        .replace(/\s*\/\s*/g, ' oder ')
+        .replace(/\.\.\./g, '')
+        .replace(/—/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function cleanForEnglishSpeech(value) {
+      return String(value ?? '')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\*\*/g, '')
+        .replace(/`/g, '')
+        .replace(/\.\.\./g, '')
+        .replace(/—/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function sectionId(index) { return `section-${index}`; }
+
+    function rowMatches(row, query) {
+      if (!query) return true;
+      return row.join(' ').toLowerCase().includes(query);
+    }
+
+    function germanColumnIndex(headers) {
+      const lowered = headers.map(h => h.toLowerCase());
+      let index = lowered.findIndex(h => h === 'german' || h === 'german verb' || h.startsWith('german'));
+      if (index >= 0) return index;
+      index = lowered.findIndex(h => h.includes('german'));
+      if (index >= 0) return index;
+      return 0;
+    }
+
+    function meaningColumnIndex(headers) {
+      const lowered = headers.map(h => h.toLowerCase());
+      let index = lowered.findIndex(h => h === 'meaning' || h === 'english');
+      if (index >= 0) return index;
+      index = lowered.findIndex(h => h.includes('meaning') || h.includes('english'));
+      return index;
+    }
+
+    function getGermanForRow(headers, row) {
+      const idx = germanColumnIndex(headers);
+      return cleanForSpeech(row[idx] || row[0] || '');
+    }
+
+    function getMeaningForRow(headers, row) {
+      const idx = meaningColumnIndex(headers);
+      if (idx >= 0 && row[idx]) return cleanForEnglishSpeech(row[idx]);
+      if (headers.length > 1 && row[1]) return cleanForEnglishSpeech(row[1]);
+      return '';
+    }
+
+    function renderNav() {
+      nav.innerHTML = VOCAB_SECTIONS.map((section, index) =>
+        `<a href="#${sectionId(index)}">${escapeHtml(section.title.replace(/^\d+\.\s*/, ''))}</a>`
+      ).join('');
+    }
+
+    function render() {
+      const query = searchBox.value.trim().toLowerCase();
+      let html = '';
+      let shownRows = 0;
+      visibleSpeakQueue = [];
+      visibleMeaningQueue = [];
+
+      VOCAB_SECTIONS.forEach((section, sectionIndex) => {
+        let sectionHtml = '';
+        section.tables.forEach((table) => {
+          const matchingRows = table.rows.filter(row => rowMatches(row, query));
+          if (!matchingRows.length) return;
+
+          const germanIdx = germanColumnIndex(table.headers);
+          const meaningIdx = meaningColumnIndex(table.headers);
+
+          sectionHtml += '<div class="table-wrap"><table>';
+          if (table.caption) sectionHtml += `<caption>${escapeHtml(table.caption)}</caption>`;
+          sectionHtml += '<thead><tr>' + table.headers.map(h => `<th>${escapeHtml(h)}</th>`).join('') + '</tr></thead><tbody>';
+
+          matchingRows.forEach((row) => {
+            const german = getGermanForRow(table.headers, row);
+            const meaning = getMeaningForRow(table.headers, row);
+            if (german) {
+              visibleSpeakQueue.push(german);
+              visibleMeaningQueue.push({ german, meaning });
+            }
+            shownRows += 1;
+            sectionHtml += '<tr>';
+            row.forEach((cell, cellIndex) => {
+              const safe = renderInlineMarkdown(cell);
+              if (cellIndex === germanIdx && german) {
+                sectionHtml += `<td><button type="button" class="cell-speak-button german-button" data-speak="${encodeURIComponent(german)}" title="Tap to hear German"><span class="word-text">${safe}</span><span class="speaker-hint" aria-hidden="true">🔊</span></button></td>`;
+              } else if (cellIndex === meaningIdx && german) {
+                sectionHtml += `<td><button type="button" class="cell-speak-button meaning-button" data-speak="${encodeURIComponent(german)}" title="Tap to hear German: ${escapeHtml(german)}"><span class="word-text">${safe}</span><span class="speaker-hint" aria-hidden="true">🔊</span></button></td>`;
+              } else {
+                sectionHtml += `<td>${safe}</td>`;
+              }
+            });
+            sectionHtml += '</tr>';
+          });
+
+          sectionHtml += '</tbody></table></div>';
+        });
+
+        if (section.notes && section.notes.length && !query) {
+          sectionHtml += '<div class="notes">' + section.notes.map(note => `<p>${renderInlineMarkdown(note)}</p>`).join('') + '</div>';
+        }
+
+        if (sectionHtml) {
+          html += `
+            <section class="vocab-section" id="${sectionId(sectionIndex)}">
+              <div class="section-head">
+                <h2>${escapeHtml(section.title)}</h2>
+                <div class="button-row">
+                  <button class="secondary small" onclick="playSection(${sectionIndex})">▶ Play this section</button>
+                  <button class="small" onclick="playSectionWithMeaning(${sectionIndex})">▶ Section German → English</button>
+                  <button class="small" onclick="playSectionEnglishFirst(${sectionIndex})">▶ Section English → German</button>
+                </div>
+              </div>
+              ${sectionHtml}
+            </section>`;
+        }
+      });
+
+      if (!html) {
+        html = '<div class="panel empty">No matching vocabulary found. Try another search word.</div>';
+      }
+
+      content.innerHTML = html;
+      visibleCount.textContent = query ? `Showing ${shownRows} matching rows` : 'Showing all rows';
+    }
+
+    function getSortedVoices() {
+      const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+      const german = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('de'));
+      const other = voices.filter(v => !(v.lang && v.lang.toLowerCase().startsWith('de')));
+      return [...german, ...other];
+    }
+
+    function loadVoices() {
+      const voices = getSortedVoices();
+      voiceSelect.innerHTML = '';
+      if (!voices.length) {
+        voiceSelect.innerHTML = '<option>No voices loaded yet</option>';
+        return;
+      }
+      voices.forEach((voice, index) => {
+        const option = document.createElement('option');
+        option.value = String(index);
+        option.textContent = `${voice.name} (${voice.lang})${voice.default ? ' — default' : ''}`;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    function selectedVoice() {
+      const voices = getSortedVoices();
+      return voices[Number(voiceSelect.value)] || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('de')) || voices[0] || null;
+    }
+
+    function selectedVoiceForLanguage(languagePrefix) {
+      const voices = getSortedVoices();
+      const prefix = String(languagePrefix || '').toLowerCase();
+      return voices.find(v => v.lang && v.lang.toLowerCase().startsWith(prefix)) || null;
+    }
+
+    function speakSingle(text) {
+      if (!('speechSynthesis' in window)) {
+        alert('Your browser does not support speech synthesis. Try Chrome, Edge, or Safari.');
+        return;
+      }
+      const cleaned = cleanForSpeech(text);
+      if (!cleaned) return;
+
+      playbackSessionId += 1;
+      if (currentUtteranceResolver) {
+        const resolver = currentUtteranceResolver;
+        currentUtteranceResolver = null;
+        resolver();
+      }
+      speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(cleaned);
+      utterance.lang = 'de-DE';
+      utterance.rate = Number(rateInput.value);
+      utterance.pitch = 1;
+      const voice = selectedVoice();
+      if (voice) utterance.voice = voice;
+      lastSpokenText = cleaned;
+      speechSynthesis.speak(utterance);
+    }
+
+    function speakWait(text, sessionId, options = {}) {
+      return new Promise(resolve => {
+        const lang = options.lang || 'de-DE';
+        const cleaned = options.english ? cleanForEnglishSpeech(text) : cleanForSpeech(text);
+        if (!cleaned || !('speechSynthesis' in window)) return resolve();
+        if (sessionId !== playbackSessionId) return resolve();
+
+        const utterance = new SpeechSynthesisUtterance(cleaned);
+        utterance.lang = lang;
+        utterance.rate = Number(rateInput.value);
+        utterance.pitch = 1;
+
+        if (options.english) {
+          const englishVoice = selectedVoiceForLanguage('en');
+          if (englishVoice) utterance.voice = englishVoice;
+        } else {
+          const voice = selectedVoice();
+          if (voice) utterance.voice = voice;
+          lastSpokenText = cleaned;
+        }
+
+        const finish = () => {
+          if (currentUtteranceResolver === finish) {
+            currentUtteranceResolver = null;
+          }
+          resolve();
+        };
+
+        currentUtteranceResolver = finish;
+        utterance.onend = finish;
+        utterance.onerror = finish;
+        speechSynthesis.speak(utterance);
+      });
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function playQueue(queue, options = {}) {
+      if (!queue.length) return;
+      if (!('speechSynthesis' in window)) {
+        alert('Your browser does not support speech synthesis. Try Chrome, Edge, or Safari.');
+        return;
+      }
+
+      const order = options.order || 'german-first';
+      const englishToGermanGapMs = Number(options.englishToGermanGapMs ?? 650);
+      const germanToEnglishGapMs = Number(options.germanToEnglishGapMs ?? 260);
+
+      playbackSessionId += 1;
+      const sessionId = playbackSessionId;
+      if (currentUtteranceResolver) {
+        const resolver = currentUtteranceResolver;
+        currentUtteranceResolver = null;
+        resolver();
+      }
+      speechSynthesis.cancel();
+
+      for (const item of queue) {
+        if (sessionId !== playbackSessionId) break;
+
+        if (typeof item === 'object' && item !== null) {
+          if (order === 'english-first') {
+            if (item.meaning) {
+              await speakWait(item.meaning, sessionId, { lang: 'en-US', english: true });
+              if (sessionId !== playbackSessionId) break;
+              await delay(englishToGermanGapMs);
+              if (sessionId !== playbackSessionId) break;
+            }
+            await speakWait(item.german, sessionId, { lang: 'de-DE' });
+          } else {
+            await speakWait(item.german, sessionId, { lang: 'de-DE' });
+            if (sessionId !== playbackSessionId) break;
+            if (item.meaning) {
+              await delay(germanToEnglishGapMs);
+              if (sessionId !== playbackSessionId) break;
+              await speakWait(item.meaning, sessionId, { lang: 'en-US', english: true });
+            }
+          }
+        } else {
+          await speakWait(item, sessionId, { lang: 'de-DE' });
+        }
+
+        if (sessionId !== playbackSessionId) break;
+        await delay(420);
+        if (sessionId !== playbackSessionId) break;
+      }
+
+      if (sessionId === playbackSessionId) {
+        currentUtteranceResolver = null;
+      }
+    }
+
+    function getSectionQueue(sectionIndex) {
+      const section = VOCAB_SECTIONS[sectionIndex];
+      const query = searchBox.value.trim().toLowerCase();
+      const queue = [];
+      section.tables.forEach(table => {
+        table.rows.filter(row => rowMatches(row, query)).forEach(row => {
+          const german = getGermanForRow(table.headers, row);
+          if (german) queue.push(german);
+        });
+      });
+      return queue;
+    }
+
+    function getSectionMeaningQueue(sectionIndex) {
+      const section = VOCAB_SECTIONS[sectionIndex];
+      const query = searchBox.value.trim().toLowerCase();
+      const queue = [];
+      section.tables.forEach(table => {
+        table.rows.filter(row => rowMatches(row, query)).forEach(row => {
+          const german = getGermanForRow(table.headers, row);
+          if (german) queue.push({ german, meaning: getMeaningForRow(table.headers, row) });
+        });
+      });
+      return queue;
+    }
+
+    function playSection(sectionIndex) { playQueue(getSectionQueue(sectionIndex)); }
+    function playSectionWithMeaning(sectionIndex) { playQueue(getSectionMeaningQueue(sectionIndex), { order: 'german-first' }); }
+    function playSectionEnglishFirst(sectionIndex) { playQueue(getSectionMeaningQueue(sectionIndex), { order: 'english-first', englishToGermanGapMs: 650 }); }
+    function playVisible() { playQueue(visibleSpeakQueue); }
+    function playVisibleWithMeaning() { playQueue(visibleMeaningQueue, { order: 'german-first' }); }
+    function playVisibleEnglishFirst() { playQueue(visibleMeaningQueue, { order: 'english-first', englishToGermanGapMs: 650 }); }
+    function repeatLast() { if (lastSpokenText) speakSingle(lastSpokenText); }
+    function stopSpeech() { cancelPlayback(); }
+
+    function activateSpeakButton(target, event) {
+      if (!target) return;
+      const encoded = target.dataset.speak || '';
+      const now = performance.now();
+      const tapKey = encoded;
+      if (tapKey === lastTapKey && now - lastTapAt < 360) {
+        if (event) event.preventDefault();
+        return;
+      }
+      lastTapAt = now;
+      lastTapKey = tapKey;
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      document.querySelectorAll('.speaking-cell').forEach(el => el.classList.remove('speaking-cell'));
+      target.classList.add('speaking-cell');
+      speakSingle(decodeURIComponent(encoded));
+      window.setTimeout(() => target.classList.remove('speaking-cell'), 900);
+    }
+
+    document.addEventListener('pointerup', (event) => {
+      const target = event.target.closest ? event.target.closest('[data-speak]') : null;
+      if (!target) return;
+      activateSpeakButton(target, event);
+    }, { passive: false });
+
+    document.addEventListener('click', (event) => {
+      const target = event.target.closest ? event.target.closest('[data-speak]') : null;
+      if (!target) return;
+      activateSpeakButton(target, event);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      const target = event.target.closest ? event.target.closest('[data-speak]') : null;
+      if (!target) return;
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      activateSpeakButton(target, event);
+    });
+
+    searchBox.addEventListener('input', render);
+    rateInput.addEventListener('input', () => rateValue.textContent = `${Number(rateInput.value).toFixed(2)}x`);
+
+    renderNav();
+    render();
+    loadVoices();
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  </script>
+</body>
+</html>
