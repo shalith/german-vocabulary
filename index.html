@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A1 SD1 Excel Word Bank Pronunciation Player</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #5d6678;
+      --border: #e4e8f0;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --soft: #eef4ff;
+      --success: #166534;
+      --warning: #92400e;
+      --danger: #b91c1c;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    header {
+      background: linear-gradient(135deg, #172033, #1e3a8a);
+      color: white;
+      padding: 28px 20px;
+    }
+    .header-inner { max-width: 1180px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: clamp(26px, 4vw, 42px); line-height: 1.1; }
+    .subtitle { margin: 0; color: rgba(255,255,255,0.84); font-size: 16px; }
+    main { max-width: 1180px; margin: 0 auto; padding: 20px; }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+      align-items: end;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 13px; color: var(--muted); font-weight: 650; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-12 { grid-column: span 12; }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      background: white;
+      color: var(--text);
+    }
+    input[type="range"] { padding: 0; }
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    button {
+      border: none;
+      background: var(--primary);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.08s ease, background 0.2s ease, opacity 0.2s ease;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:hover { background: var(--primary-dark); }
+    button:active { transform: scale(0.98); }
+    button.secondary { background: #475569; }
+    button.success { background: var(--success); }
+    button.warning { background: var(--warning); }
+    button.danger { background: var(--danger); }
+    button.small { padding: 7px 10px; font-size: 13px; border-radius: 10px; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      background: var(--soft);
+      border: 1px solid #dbeafe;
+      color: #1e3a8a;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 650;
+    }
+    .status {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      min-height: 22px;
+    }
+    nav { display: flex; flex-wrap: wrap; gap: 8px; }
+    nav a {
+      text-decoration: none;
+      color: #1e3a8a;
+      background: var(--soft);
+      border: 1px solid #dbeafe;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-weight: 650;
+      font-size: 13px;
+    }
+    section.vocab-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      background: #fbfcff;
+    }
+    .section-title { margin: 0; font-size: 20px; }
+    .section-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 620px; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: #f8fafc; color: #344054; font-size: 13px; text-transform: uppercase; letter-spacing: 0.02em; }
+    tr:hover td { background: #fbfdff; }
+    .notes { padding: 14px 16px; color: var(--muted); }
+    .notes p { margin: 7px 0; }
+    .speak-cell { padding: 0; }
+    .cell-speak {
+      width: 100%;
+      height: 100%;
+      min-height: 43px;
+      display: block;
+      text-align: left;
+      padding: 12px 14px;
+      background: transparent;
+      color: inherit;
+      border: 0;
+      border-radius: 0;
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: 1.5;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(37, 99, 235, 0.16);
+    }
+    .cell-speak:hover { background: #eef4ff; color: #1d4ed8; }
+    .cell-speak:focus { outline: 2px solid #93c5fd; outline-offset: -2px; }
+    .german-word { font-weight: 750; color: #111827; }
+    .meaning-word { color: #334155; }
+    mark { background: #fef3c7; padding: 0 2px; border-radius: 4px; }
+    .empty { padding: 24px; color: var(--muted); text-align: center; }
+    @media (max-width: 800px) {
+      main { padding: 12px; }
+      .controls { grid-template-columns: 1fr; }
+      .span-3, .span-4, .span-5, .span-12 { grid-column: span 1; }
+      .section-header { align-items: flex-start; flex-direction: column; }
+      .section-actions { justify-content: flex-start; }
+      h1 { font-size: 27px; }
+      table { min-width: 560px; }
+      th, td { padding: 10px; }
+      .cell-speak { padding: 11px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <h1>A1 SD1 Excel Word Bank Pronunciation Player</h1>
+      <p class="subtitle">New clean text-only version created from the attached Excel word bank only. Search the bank and tap/click German words or English meanings to hear German pronunciation. Includes Play, Pause/Continue, Stop, German → English, and English → German practice modes.</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="panel">
+      <div class="controls">
+        <div class="field span-5">
+          <label for="searchBox">Search vocabulary</label>
+          <input id="searchBox" type="search" placeholder="Search German, English, article, plural, note..." />
+        </div>
+        <div class="field span-4">
+          <label for="voiceSelect">German voice</label>
+          <select id="voiceSelect"></select>
+        </div>
+        <div class="field span-3">
+          <label for="rate">Speed: <span id="rateValue">0.8x</span></label>
+          <input id="rate" type="range" min="0.3" max="1.5" step="0.1" value="0.8" />
+        </div>
+        <div class="field span-12">
+          <div class="button-row">
+            <button type="button" class="secondary" onclick="testVoice()">🔊 Test Voice</button>
+            <button type="button" onclick="playVisible()">▶ Play Visible Words</button>
+            <button type="button" onclick="playVisibleWithMeaning()">▶ German → English Meaning</button>
+            <button type="button" onclick="playVisibleEnglishFirst()">▶ English → German</button>
+            <button type="button" id="pauseResumeBtn" class="warning" onclick="togglePauseResume()">⏸ Pause</button>
+            <button type="button" class="danger" onclick="stopSpeech()">■ Stop</button>
+            <button type="button" class="success" onclick="repeatLast()">↻ Repeat Last</button>
+          </div>
+        </div>
+      </div>
+      <div class="stats">
+        <span class="chip">📚 <span id="visibleCount">0</span> visible rows</span>
+        <span class="chip">🧾 19 sections</span>
+        <span class="chip">🔤 887 vocabulary rows</span>
+        <span class="chip">📱 Mobile tap optimized</span>
+        <span class="chip">⏸ Pause/Continue supported</span>
+      </div>
+      <div id="status" class="status">Ready. Tip: choose a German voice such as Google Deutsch, Microsoft Katja, Anna, or any de-DE voice.</div>
+    </div>
+
+    <div class="panel">
+      <nav id="sectionNav"></nav>
+    </div>
+
+    <div id="content"></div>
+  </main>
+
+  <script>
+    const VOCAB_SECTIONS = [{"title": "1 Numbers, money, measures", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["null", "zero", ""], ["eins", "one", ""], ["zwei", "two", ""], ["drei", "three", ""], ["vier", "four", ""], ["fünf", "five", ""], ["sechs", "six", ""], ["sieben", "seven", ""], ["acht", "eight", ""], ["neun", "nine", ""], ["zehn", "ten", ""], ["elf", "eleven", ""], ["zwölf", "twelve", ""], ["dreizehn", "thirteen", ""], ["vierzehn", "fourteen", ""], ["fünfzehn", "fifteen", ""], ["sechzehn", "sixteen", ""], ["siebzehn", "seventeen", ""], ["achtzehn", "eighteen", ""], ["neunzehn", "nineteen", ""], ["zwanzig", "twenty", ""], ["einundzwanzig", "twenty-one", ""], ["dreißig", "thirty", ""], ["vierzig", "forty", ""], ["fünfzig", "fifty", ""], ["sechzig", "sixty", ""], ["siebzig", "seventy", ""], ["achtzig", "eighty", ""], ["neunzig", "ninety", ""], ["(ein)hundert", "one hundred / hundred", ""], ["hunderteins", "one hundred and one", ""], ["zweihundert", "two hundred", ""], ["(ein)tausend", "one thousand / thousand", ""], ["die Million, -en", "million", ""], ["die Milliarde, -n", "billion", ""], ["erste/r/s", "first", ""], ["zweite/r/s", "second", ""], ["dritte/r/s", "third", ""], ["vierte/r/s", "fourth", ""], ["ein halb / halb", "one half / half", ""], ["ein Viertel / Viertel", "a quarter / quarter", ""], ["der Euro, -s", "euro", ""], ["der Cent, -s", "cent", ""], ["das Geld", "money", ""], ["der Preis, -e", "price", ""], ["das Konto", "bank account", ""], ["die Kasse", "cash desk / checkout", ""], ["die Rechnung, -en", "bill / invoice", ""], ["bar", "cash / in cash", ""], ["die Karte, -n", "card; ticket; map; menu; postcard; card; ticket; map; menu", ""], ["die Kreditkarte, -n", "credit card", ""], ["Grad Celsius", "degree Celsius", ""], ["das Gewicht", "weight", ""], ["die Größe", "size; height", ""], ["der Meter", "meter", ""], ["der Zentimeter", "centimeter", ""], ["der Kilometer", "kilometer", ""], ["der Quadratmeter", "square meter", ""], ["das Prozent", "percent", ""], ["der Liter", "liter", ""], ["das Gramm", "gram", ""], ["das Pfund", "pound / 500 grams in German shopping context", ""], ["das Kilo / Kilogramm", "kilo / kilogram", ""], ["circa / ca.", "approximately / about", ""]]}], "notes": []}, {"title": "2 Time, calendar, scheduling", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["die Uhr, -en", "clock; watch; o’clock", ""], ["die Uhrzeit, -en", "time of day / clock time", ""], ["die Sekunde, -n", "second", ""], ["die Minute, -n", "minute", ""], ["die Stunde, -n", "hour; lesson", ""], ["der Tag, -e", "day", ""], ["die Woche, -n", "week", ""], ["das Jahr, -e", "year", ""], ["das Datum, die Daten", "date", ""], ["der Wochentag, -e", "weekday", ""], ["der Sonntag, -e", "Sunday", ""], ["der Montag, -e", "Monday", ""], ["der Dienstag, -e", "Tuesday", ""], ["der Mittwoch, -e", "Wednesday", ""], ["der Donnerstag, -e", "Thursday", ""], ["der Freitag, -e", "Friday", ""], ["der Samstag, -e", "Saturday", ""], ["der Sonnabend", "Saturday", ""], ["das Wochenende, -n", "weekend", ""], ["am Wochenende", "at/on the weekend", ""], ["der Morgen", "morning", ""], ["der Vormittag, -e", "morning / before noon", ""], ["der Mittag, -e", "noon / midday", ""], ["der Nachmittag, -e", "afternoon", ""], ["der Abend, -e", "evening", ""], ["die Nacht, Nächte", "night", ""], ["der Januar", "January", ""], ["der Februar", "February", ""], ["der März", "March", ""], ["der April", "April", ""], ["der Mai", "May", ""], ["der Juni", "June", ""], ["der Juli", "July", ""], ["der August", "August", ""], ["der September", "September", ""], ["der Oktober", "October", ""], ["der November", "November", ""], ["der Dezember", "December", ""], ["der Frühling", "spring", ""], ["das Frühjahr", "spring", ""], ["der Sommer", "summer", ""], ["der Herbst", "autumn / fall", ""], ["der Winter", "winter", ""], ["heute", "today", ""], ["morgen", "tomorrow", ""], ["gestern", "yesterday", ""], ["jetzt", "now", ""], ["bald", "soon", ""], ["früher", "earlier / formerly", ""], ["später", "later", ""], ["gleich", "right away; soon; same", ""], ["sofort", "immediately", ""], ["zurzeit", "currently / at the moment", ""], ["einmal", "once; one time", ""], ["seit", "since / for", ""], ["vor", "before; ago; in front of", ""], ["nach", "after; to; past", ""], ["bis", "until / to", ""], ["dann", "then", ""], ["zwischen", "between", ""], ["Anfang Juli", "beginning of July", ""], ["Ende des Monats", "end of the month", ""], ["der Termin, -e", "appointment", ""], ["die Pause, -n", "break", ""], ["die Mittagspause, -n", "lunch break", ""], ["der Feierabend", "end of the working day / after work; end of workday", ""], ["der Feiertag", "public holiday", ""], ["die Zeit", "time", ""], ["spät", "late", ""], ["pünktlich", "punctual / on time", ""], ["Feier-", "celebration/holiday/after-work prefix, as in Feiertag or Feierabend", ""], ["lange", "for a long time", ""]]}], "notes": []}, {"title": "3 Grammar helpers, pronouns, small words", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["der / die / das", "the; this/that depending on use", ""], ["ein-", "a/an; one", ""], ["kein-", "no; not a; none", ""], ["all-", "all / everything", ""], ["jed-", "each / every", ""], ["beide", "both", ""], ["ander-", "other / another", ""], ["dies-", "this", ""], ["welch-", "which", ""], ["was für ein", "what kind of", ""], ["ich", "I", ""], ["du", "you informal singular", ""], ["er", "he", ""], ["es", "it", ""], ["sie", "she; they; you formal", ""], ["wir", "we", ""], ["man", "one / people / you in general", ""], ["sich", "oneself / himself / herself / themselves", ""], ["dich", "you informal accusative", ""], ["dir", "you informal dative", ""], ["ihr / ihm / ihn", "her/to her; to him; him", ""], ["mein", "my", ""], ["dein-", "your informal singular", ""], ["euer", "your informal plural", ""], ["unser-", "our", ""], ["aber", "but", ""], ["also", "so / therefore / well then", ""], ["denn", "because; then; actually in questions", ""], ["und", "and", ""], ["oder", "or", ""], ["auch", "also / too", ""], ["nur", "only / just", ""], ["noch", "still; yet; another", ""], ["nicht", "not", ""], ["nichts", "nothing", ""], ["ja", "yes", ""], ["nein", "no", ""], ["bitte", "please; here you are; you are welcome", ""], ["danke", "thanks", ""], ["so", "so; like this", ""], ["da", "there; here; then", ""], ["dort / dorthin / dorther", "there / to there / from there", ""], ["daneben", "next to it / beside it", ""], ["hier", "here", ""], ["hinten", "at the back / behind", ""], ["oben", "upstairs / above", ""], ["unten", "downstairs / below", ""], ["draußen", "outside", ""], ["gerade", "just now; straight; exactly; just; straight; exactly", ""], ["geradeaus", "straight ahead", ""], ["zusammen", "together", ""], ["zurück", "back / return", ""], ["weiter", "further / onward", ""], ["vielleicht", "perhaps / maybe", ""], ["automatisch", "automatically; automatic / automatically", ""], ["selbstständig", "self-employed / independent", ""], ["an", "at; on; to", ""], ["auf", "on; open; at", ""], ["aus", "from; out of", ""], ["bei", "at; near; with; at someone’s home/work", ""], ["durch", "through", ""], ["für", "for", ""], ["gegen", "against; around/about time; against / around", ""], ["in", "in; into", ""], ["mit", "with", ""], ["ohne", "without", ""], ["über", "over; above; about", ""], ["um", "at; around", ""], ["unter", "under; below", ""], ["von", "from; of", ""], ["zu", "to; too; closed", ""], ["rechts", "right / on the right", ""], ["links", "left / on the left", ""], ["immer", "always", ""], ["leider", "unfortunately", ""], ["meist-", "most / mostly", ""], ["nie", "never", ""], ["oft", "often", ""]]}], "notes": []}, {"title": "4 Question words and question phrases", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["wer", "who", ""], ["was", "what", ""], ["wann", "when", ""], ["warum", "why", ""], ["wie", "how; as", ""], ["wie viel", "how much", ""], ["wo", "where", ""], ["woher", "from where", ""], ["wohin", "where to", ""], ["Wie bitte?", "Pardon? / Sorry, what?; Pardon? / Could you repeat?", ""], ["Wie geht’s?", "How are you?", ""], ["Wie heißt das auf Deutsch?", "What is that called in German?", ""], ["Woher kommen Sie?", "Where are you from? formal", ""], ["Wann sind Sie geboren?", "When were you born?", ""], ["Welche Hausnummer haben Sie?", "What house number do you have?", ""]]}], "notes": []}, {"title": "5 People, family, personal information", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["die Adresse, -n", "address", ""], ["der Absender", "sender", ""], ["der Empfänger", "recipient", ""], ["die Anrede", "salutation / form of address", ""], ["das Alter", "age", ""], ["der Name, -n", "name", ""], ["der Vorname, -n", "first name", ""], ["der Familienname", "family name / surname", ""], ["der Familienstand", "marital status", ""], ["geboren", "born", ""], ["das Geburtsjahr", "year of birth", ""], ["der Geburtsort", "place of birth", ""], ["der Geburtstag", "birthday", ""], ["der Ausweis", "ID card / identity document", ""], ["der Pass, Pässe", "passport", ""], ["die Papiere", "papers / documents", ""], ["die Postleitzahl", "postal code / zip code", ""], ["die Vorwahl", "area code / dialing code", ""], ["männlich", "male", ""], ["weiblich", "female", ""], ["ledig", "single / unmarried", ""], ["verheiratet", "married", ""], ["das Ausland", "foreign countries / abroad", ""], ["der Ausländer, -", "foreigner", ""], ["ausländisch", "foreign", ""], ["der/die Deutsche, -n", "German person", ""], ["ein Deutscher / eine Deutsche", "a German man / woman", ""], ["deutsch", "German", ""], ["Deutschland", "Germany", ""], ["Europa", "Europe", ""], ["der Europäer", "European man/person", ""], ["europäisch", "European", ""], ["international", "international", ""], ["das Baby, -s", "baby", ""], ["die Eltern", "parents", ""], ["die Familie, -n", "family", ""], ["die Geschwister", "siblings", ""], ["der Bruder, Brüder", "brother", ""], ["die Schwester, -n", "sister", ""], ["der Mann, Männer", "man; husband", ""], ["die Frau, -en", "woman; wife; Ms/Mrs", ""], ["die Ehefrau, -en", "wife", ""], ["der Ehemann, Ehemänner", "husband", ""], ["die Mutter, Mütter", "mother", ""], ["der Vater, Väter", "father", ""], ["der Sohn, Söhne", "son", ""], ["die Tochter, Töchter", "daughter", ""], ["das Kind, -er", "child", ""], ["der Junge, -n", "boy", ""], ["das Mädchen, -", "girl", ""], ["die Oma, -s", "grandma", ""], ["der Opa, -s", "grandpa", ""], ["die Großeltern", "grandparents", ""], ["die Großmutter", "grandmother", ""], ["der Großvater", "grandfather", ""], ["der Partner / die Partnerin", "partner", ""], ["der/die Bekannte, -n", "acquaintance", ""], ["der Freund, -e", "male friend; boyfriend", ""], ["die Freundin, -nen", "female friend; girlfriend", ""], ["der Verwandte, -n", "relative", ""], ["die Dame, -n", "lady", ""], ["der Herr, -en", "Mr; gentleman", ""], ["der Mensch, -en", "human being / person", ""], ["die Leute", "people", ""], ["der Erwachsene, -n", "adult", ""], ["der Jugendliche, -n", "young person / teenager", ""], ["der Gast, Gäste", "guest", ""], ["der Kunde, -n", "customer", ""], ["der Beamte, -n", "civil servant / official", ""], ["der Kollege, -n", "colleague", ""], ["Türkei / Türke / Türkin / türkisch", "Turkey / Turkish man / Turkish woman / Turkish", ""], ["Finnland / Finne / Finnin / finnisch", "Finland / Finnish man / Finnish woman / Finnish", ""], ["Mexiko / Mexikaner / Mexikanerin / mexikanisch", "Mexico / Mexican man / Mexican woman / Mexican", ""], ["die Einladung", "invitation", ""], ["der Hausmann", "househusband", ""], ["die Hochzeit", "wedding", ""], ["die Partnerin, -nen", "female partner", ""]]}], "notes": []}, {"title": "6 Body, health, feelings", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["der Arm, -e", "arm", ""], ["das Auge, -n", "eye", ""], ["der Bauch", "belly / stomach", ""], ["das Bein, -e", "leg", ""], ["der Fuß, Füße", "foot", ""], ["die Hand, Hände", "hand", ""], ["das Haar, -e", "hair", ""], ["der Kopf", "head", ""], ["der Mund", "mouth", ""], ["der Arzt, Ärzte", "doctor", ""], ["die Ärztin, -nen", "female doctor", ""], ["der Doktor", "doctor", ""], ["die Praxis", "doctor’s office / practice; practice / doctor’s office", ""], ["das Fieber", "fever", ""], ["krank", "sick / ill", ""], ["schlecht", "bad; unwell; bad / poor / unwell", ""], ["weh tun", "to hurt", ""], ["müde", "tired", ""], ["tot", "dead", ""], ["gestorben", "dead / died", ""], ["der Hunger", "hunger", ""], ["der Durst", "thirst", ""], ["böse", "angry / upset", ""], ["glücklich", "happy", ""], ["zufrieden", "satisfied / content", ""], ["eilig", "in a hurry; urgent / in a hurry", ""], ["sich freuen", "to be happy / look forward to", ""], ["das Feuer", "fire", ""]]}], "notes": []}, {"title": "7 Home, housing, furniture", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["das Apartment, -s", "apartment", ""], ["das Haus, Häuser", "house", ""], ["die Wohnung, -en", "apartment / flat", ""], ["das Zimmer, -", "room", ""], ["das Schlafzimmer", "bedroom", ""], ["das Bad", "bathroom", ""], ["die Dusche", "shower", ""], ["die Küche", "kitchen", ""], ["der Balkon", "balcony", ""], ["der Garten", "garden", ""], ["der Eingang", "entrance", ""], ["der Ausgang", "exit", ""], ["der Aufzug, Aufzüge", "elevator / lift", ""], ["der Stock", "floor / storey", ""], ["die Treppe, -n", "stairs", ""], ["der Raum, Räume", "room / space; room / classroom", ""], ["die Ecke, -n", "corner", ""], ["die Tür", "door", ""], ["das Fenster", "window", ""], ["der Schlüssel, -", "key", ""], ["das Bett, -en", "bed", ""], ["der Schrank, Schränke", "cupboard / wardrobe", ""], ["das Sofa", "sofa", ""], ["der Tisch, -e", "table", ""], ["die Möbel", "furniture", ""], ["der Herd", "stove / cooker", ""], ["der Kühlschrank", "refrigerator / fridge", ""], ["die Maschine, -n", "machine", ""], ["die Waschmaschine", "washing machine", ""], ["das Licht", "light", ""], ["das Glas, Gläser", "glass", ""], ["mieten", "to rent", ""], ["die Miete", "rent", ""], ["vermieten", "to rent out", ""], ["der Vermieter", "landlord", ""], ["umziehen", "to move house", ""], ["zu Hause", "at home", ""], ["nach Hause", "home / to home", ""]]}], "notes": []}, {"title": "8 City, public places, services, directions", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["die Bank", "bank; bench", ""], ["die Bäckerei", "bakery", ""], ["das Café, -s", "café", ""], ["die Disco", "disco / club", ""], ["die Firma", "company", ""], ["das Geschäft, -e", "shop / business", ""], ["der Kiosk", "kiosk", ""], ["das Kino, -s", "cinema / movie theater", ""], ["das Lokal", "restaurant / pub / local place; bar / restaurant / local place", ""], ["das Restaurant, -s", "restaurant", ""], ["das Reisebüro, -s", "travel agency", ""], ["die Polizei", "police", ""], ["die Post", "post office; mail", ""], ["die Rezeption", "reception", ""], ["der Schalter", "counter / service desk", ""], ["das Museum", "museum", ""], ["die Schule", "school", ""], ["der Kindergarten", "kindergarten", ""], ["die Universität", "university", ""], ["die Stadt, Städte", "city / town", ""], ["das Dorf, Dörfer", "village", ""], ["der Ort, -e", "place / town", ""], ["das Zentrum", "center", ""], ["die Straße, -n", "street / road", ""], ["die Autobahn, -en", "motorway / highway", ""], ["die Haltestelle", "stop / station", ""], ["das Gleis, -e", "platform track", ""], ["der Bahnsteig", "train platform", ""], ["der Bahnhof", "train station", ""], ["die Auskunft, Auskünfte", "information / information desk", ""], ["die Information, -en", "information; information desk", ""], ["das Formular, -e", "form", ""], ["die Anmeldung", "registration", ""], ["die Aussage, -n", "statement", ""], ["die Aufgabe, -n", "task / exercise", ""], ["der Bogen", "sheet / form", ""], ["die Antwort, -en", "answer", ""], ["die Lösung, -en", "solution; solution / answer", ""], ["das Ergebnis, -se", "result", ""], ["die Prüfung", "exam", ""], ["der Test", "test", ""], ["der Plan, Pläne", "plan; map", ""], ["der Prospekt, -e", "brochure", ""], ["der Zoll", "customs", ""], ["der Automat", "machine / vending machine", ""], ["der Anschluss", "connection; telephone connection", ""], ["der Telefonanschluss", "telephone connection", ""], ["das Schild, -er", "sign", ""], ["der Eintritt", "entrance fee / admission", ""], ["der Verein", "club / association", ""], ["die Welt", "world", ""], ["die Auskunft", "information / information desk", ""], ["die Information", "information / information desk", ""], ["die Halle", "hall", ""], ["die Mitte", "middle / center", ""], ["der Platz, Plätze", "place / square / seat / space", ""], ["das Problem, -e", "problem", ""], ["die Toilette, -en", "toilet / restroom", ""]]}], "notes": []}, {"title": "9 Travel, traffic, transport, accommodation", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["das Auto, -s", "car", ""], ["die Bahn", "train / railway", ""], ["die S-Bahn", "suburban train", ""], ["die Straßenbahn", "tram", ""], ["der Bus, -se", "bus", ""], ["das Taxi, -s", "taxi", ""], ["der Zug, Züge", "train", ""], ["das Fahrrad, Fahrräder", "bicycle", ""], ["das Rad, Räder", "bike / wheel", ""], ["der Lkw, -s", "truck / lorry", ""], ["das Flugzeug", "airplane", ""], ["die Fahrkarte, -n", "ticket", ""], ["das Ticket, -s", "ticket", ""], ["der Reiseführer", "travel guide; tour guide", ""], ["das Gepäck", "luggage", ""], ["der Koffer, -", "suitcase", ""], ["das Hotel, -s", "hotel", ""], ["das Doppelzimmer", "double room", ""], ["das Einzelzimmer", "single room", ""], ["die Halbpension", "half board", ""], ["die Reise", "trip / journey", ""], ["der Ausflug", "excursion / day trip", ""], ["die Abfahrt", "departure", ""], ["die Ankunft", "arrival", ""], ["der Abflug", "flight departure", ""], ["die Führung", "guided tour", ""], ["die Sehenswürdigkeit, -en", "sight / tourist attraction", ""], ["der See", "lake", ""], ["das Meer", "sea", ""], ["der Fahrer", "driver", ""], ["die Fahrkarte", "ticket", ""], ["der Blick", "view / look", ""], ["der Flughafen", "airport", ""]]}], "notes": []}, {"title": "10 Food, drink, restaurant", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["der Apfel, Äpfel", "apple", ""], ["die Banane, -n", "banana", ""], ["die Birne, -n", "pear", ""], ["das Ei, -er", "egg", ""], ["das Brot, -e", "bread; loaf/sandwiches", ""], ["das Brötchen, -", "bread roll", ""], ["die Butter", "butter", ""], ["der Kuchen", "cake", ""], ["die Kartoffel, -n", "potato", ""], ["das Fleisch", "meat", ""], ["der Fisch, -e", "fish", ""], ["das Hähnchen, -", "chicken", ""], ["der Reis", "rice", ""], ["das Gemüse", "vegetables", ""], ["das Obst", "fruit", ""], ["das Öl", "oil", ""], ["die Pommes frites", "French fries / chips", ""], ["der Salat", "salad; lettuce", ""], ["das Salz", "salt", ""], ["der Schinken, -", "ham", ""], ["die Tomate, -n", "tomato", ""], ["die Lebensmittel", "groceries / foodstuffs", ""], ["das Getränk, -e", "drink / beverage", ""], ["das Wasser", "water", ""], ["der Kaffee", "coffee", ""], ["der Tee", "tea", ""], ["die Milch", "milk", ""], ["der Saft", "juice", ""], ["das Bier", "beer", ""], ["der Wein", "wine", ""], ["die Flasche, -n", "bottle", ""], ["der Appetit", "appetite", ""], ["das Essen", "food / meal", ""], ["das Frühstück", "breakfast", ""], ["die Speisekarte", "menu", ""], ["Guten Appetit!", "Enjoy your meal!", ""], ["bitter", "bitter", ""], ["wunderbar", "wonderful", ""], ["schmecken", "to taste", ""], ["riechen", "to smell", ""], ["die Lebensmittel (pl.)", "groceries / foodstuffs", ""]]}], "notes": []}, {"title": "11 Shopping, clothing, payment", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["der Laden, Läden", "shop / store", ""], ["das Angebot, -e", "offer / special offer", ""], ["die Anzeige, -n", "advertisement", ""], ["die Kleidung", "clothing", ""], ["die Jacke, -n", "jacket", ""], ["der Schuh, -e", "shoe", ""], ["die Tasche, -n", "bag", ""], ["das Geschenk, -e", "gift / present", ""], ["die Farbe, -n", "color", ""], ["der Verkäufer", "salesperson / seller", ""], ["günstig", "cheap / good-value; cheap / good-value / favorable", ""], ["billig", "cheap / inexpensive", ""], ["teuer", "expensive", ""], ["kosten", "to cost", ""], ["bezahlen", "to pay", ""], ["zahlen", "to pay", ""], ["überweisen", "to transfer money", ""], ["einkaufen", "to shop", ""], ["kaufen", "to buy", ""], ["verkaufen", "to sell", ""], ["bestellen", "to order", ""], ["anbieten", "to offer", ""], ["empfehlen", "to recommend", ""], ["Was bekommen Sie?", "What would you like? / What are you having?", ""], ["die Zigarette, -n", "cigarette", ""]]}], "notes": []}, {"title": "12 Work, job, office", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["arbeiten", "to work", ""], ["die Arbeit, -en", "work; job", ""], ["arbeitslos", "unemployed", ""], ["der Arbeitsplatz, Arbeitsplätze", "workplace", ""], ["der Beruf, -e", "profession / occupation", ""], ["der Job, -s", "job", ""], ["die Stelle, -n", "job position; place/spot", ""], ["der Chef", "boss", ""], ["verdienen", "to earn", ""], ["das Praktikum", "internship", ""], ["der Urlaub", "vacation / leave", ""], ["das Büro", "office", ""], ["der Computer", "computer", ""], ["der Drucker", "printer", ""], ["das Fax, -e", "fax", ""], ["die E-Mail, -s", "email", ""], ["der Kugelschreiber", "ballpoint pen", ""], ["der Bleistift, -e", "pencil", ""], ["die Unterschrift", "signature", ""], ["unterschreiben", "to sign", ""], ["der Arbeitsplatz", "workplace", ""], ["die Reparatur", "repair", ""]]}], "notes": []}, {"title": "13 School, learning, exam", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["der Lehrer, -", "teacher", ""], ["die Lehrerin, -nen", "female teacher", ""], ["der Schüler, -", "pupil / school student", ""], ["die Schülerin, -nen", "female pupil / school student", ""], ["der Student, -en", "university student", ""], ["die Studentin, -nen", "female university student", ""], ["die Klasse", "class", ""], ["der Kurs, -e", "course", ""], ["der Unterricht", "lesson / class", ""], ["das Buch, Bücher", "book", ""], ["das Wörterbuch", "dictionary", ""], ["der Buchstabe, -n", "letter of the alphabet", ""], ["das Wort, Wörter/Worte", "word", ""], ["der Satz, Sätze", "sentence", ""], ["der Text, -e", "text", ""], ["das Thema", "topic", ""], ["die Sprache, -n", "language", ""], ["die Hausaufgabe, -n", "homework", ""], ["die Übung", "exercise / practice", ""], ["der Fehler, -", "mistake / error", ""], ["die Gruppe, -n", "group", ""], ["der Antwortbogen", "answer sheet", ""], ["das Papier", "paper", ""], ["die CD, -s", "CD", ""], ["das Studium", "university studies", ""], ["der Anfang", "beginning", ""], ["das Ende", "end", ""], ["der Teil, -e", "part", ""], ["ergänzen", "to complete / add missing information", ""], ["zuordnen", "to match / assign", ""], ["das Beispiel, -e", "example", ""], ["die Frage, -n", "question", ""]]}], "notes": []}, {"title": "14 Communication, post, media", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["anrufen", "to call someone", ""], ["der Anruf, -e", "phone call", ""], ["der Anrufbeantworter", "answering machine / voicemail", ""], ["die Ansage, -n", "announcement / recorded message", ""], ["die Durchsage, -n", "public announcement", ""], ["telefonieren", "to telephone", ""], ["das Telefon", "telephone", ""], ["das Handy, -s", "mobile phone", ""], ["die Nummer, -n", "number", ""], ["der Brief, -e", "letter", ""], ["die Briefmarke, -n", "stamp", ""], ["schicken", "to send", ""], ["die Zeitung, -en", "newspaper", ""], ["das Internet", "internet", ""], ["der Film, -e", "film / movie; movie / film", ""], ["fernsehen", "to watch television; to watch TV", ""], ["das Lied, -er", "song", ""], ["die Ansage", "announcement", ""], ["das Gespräch, -e", "conversation", ""], ["der Gruß, Grüße", "greeting / regards", ""], ["das Bild, -er", "picture / image", ""], ["das Foto, -s", "photo", ""]]}], "notes": []}, {"title": "15 Leisure, sports, culture", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["die Freizeit", "free time / leisure time", ""], ["das Hobby, -s", "hobby", ""], ["der Sport", "sport / exercise", ""], ["der Fußball", "football / soccer", ""], ["Rad fahren", "to ride a bike", ""], ["schwimmen", "to swim", ""], ["das Schwimmbad", "swimming pool", ""], ["wandern", "to hike", ""], ["tanzen", "to dance", ""], ["grillen", "to barbecue; to barbecue / grill", ""], ["spielen", "to play", ""], ["Karten spielen", "to play cards", ""], ["die Party", "party", ""], ["kulturell", "cultural / culturally", ""], ["das Café", "café", ""], ["gewinnen", "to win", ""], ["lachen", "to laugh", ""], ["lustig", "funny", ""], ["Lieblings-", "favorite", ""], ["der Lieblingsfilm", "favorite movie", ""], ["das Lieblingslied", "favorite song", ""]]}], "notes": []}, {"title": "16 Nature, weather, geography, colors", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["der Baum, Bäume", "tree", ""], ["die Blume, -n", "flower", ""], ["die Sonne", "sun", ""], ["der Wind", "wind", ""], ["der Regen", "rain", ""], ["regnen", "to rain", ""], ["das Wetter", "weather", ""], ["das Land, Länder", "country; land", ""], ["die Heimat", "home country / homeland", ""], ["der Norden", "north", ""], ["der Süden", "south", ""], ["der Westen", "west", ""], ["der Osten", "east", ""], ["schwarz", "black", ""], ["grau", "gray", ""], ["blau", "blue", ""], ["grün", "green", ""], ["weiß", "white", ""], ["rot", "red", ""], ["gelb", "yellow", ""], ["braun", "brown", ""], ["der Hund, -e", "dog", ""]]}], "notes": []}, {"title": "17 Verbs and actions", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["abfahren", "to depart / leave by vehicle", ""], ["abfliegen", "to depart by plane / take off", ""], ["abgeben", "to hand in / give away", ""], ["abholen", "to pick up / collect", ""], ["anklicken", "to click", ""], ["ankommen", "to arrive", ""], ["ankreuzen", "to tick / check / mark with a cross; to tick / mark with a cross", ""], ["anmachen", "to turn on", ""], ["(sich) anmelden", "to register / sign up", ""], ["antworten", "to answer", ""], ["(sich) anziehen", "to get dressed", ""], ["aufhören", "to stop / finish", ""], ["aufstehen", "to get up / stand up", ""], ["ausfüllen", "to fill out; to fill in / fill out", ""], ["ausmachen", "to turn off", ""], ["aussehen", "to look / appear", ""], ["aussteigen", "to get off / exit", ""], ["(sich) ausziehen", "to take off clothes/shoes; undress", ""], ["baden", "to bathe", ""], ["bedeuten", "to mean", ""], ["beginnen", "to begin", ""], ["bekommen", "to receive / get", ""], ["benutzen", "to use", ""], ["besichtigen", "to visit/sightsee/inspect", ""], ["besuchen", "to visit", ""], ["bitten", "to ask / request", ""], ["bleiben", "to stay / remain", ""], ["brauchen", "to need", ""], ["bringen", "to bring", ""], ["buchstabieren", "to spell", ""], ["danken", "to thank", ""], ["dauern", "to last / take time", ""], ["drucken", "to print", ""], ["drücken", "to press / push", ""], ["dürfen", "may / to be allowed to", ""], ["(sich) duschen", "to shower", ""], ["einladen", "to invite", ""], ["einsteigen", "to get in / board", ""], ["enden", "to end", ""], ["entschuldigen", "to excuse / apologize", ""], ["erklären", "to explain", ""], ["erlauben", "to allow", ""], ["erzählen", "to tell / narrate", ""], ["essen", "to eat", ""], ["fahren", "to drive / travel / go by vehicle", ""], ["feiern", "to celebrate", ""], ["fehlen", "to be missing / be absent / lack", ""], ["finden", "to find", ""], ["fliegen", "to fly", ""], ["fragen", "to ask", ""], ["(sich) freuen", "to be happy / look forward to", ""], ["frühstücken", "to have breakfast", ""], ["geben", "to give", ""], ["gefallen", "to please / be liked", ""], ["gehen", "to go / walk", ""], ["gehören", "to belong", ""], ["glauben", "to believe / think", ""], ["gratulieren", "to congratulate", ""], ["haben", "to have", ""], ["halten", "to stop / hold", ""], ["heiraten", "to marry", ""], ["heißen", "to be called / be named", ""], ["helfen", "to help", ""], ["holen", "to get / fetch", ""], ["hören", "to hear / listen", ""], ["kennen", "to know / be familiar with", ""], ["kennenlernen", "to get to know / meet for first time", ""], ["kochen", "to cook", ""], ["kommen", "to come", ""], ["können", "can / to be able to", ""], ["kriegen", "to get / receive", ""], ["sich kümmern", "to take care of", ""], ["laufen", "to walk / run", ""], ["leben", "to live", ""], ["legen", "to lay / put down", ""], ["lernen", "to learn", ""], ["lesen", "to read", ""], ["lieben", "to love", ""], ["liegen", "to lie / be located", ""], ["machen", "to do / make", ""], ["mitbringen", "to bring along", ""], ["mitkommen", "to come along", ""], ["mitmachen", "to join in / participate", ""], ["mitnehmen", "to take along", ""], ["möchten", "would like", ""], ["mögen", "to like", ""], ["müssen", "must / have to", ""], ["nehmen", "to take", ""], ["öffnen", "to open", ""], ["rauchen", "to smoke", ""], ["reisen", "to travel", ""], ["reparieren", "to repair", ""], ["sagen", "to say / tell", ""], ["scheinen", "to shine / seem", ""], ["schlafen", "to sleep", ""], ["schließen", "to close", ""], ["schreiben", "to write", ""], ["sehen", "to see", ""], ["sein", "to be", ""], ["sitzen", "to sit", ""], ["sollen", "should / be supposed to", ""], ["sprechen", "to speak", ""], ["stehen", "to stand / be written", ""], ["stellen", "to put / place upright", ""], ["studieren", "to study at university", ""], ["suchen", "to search / look for", ""], ["(sich) treffen", "to meet", ""], ["trinken", "to drink", ""], ["tun", "to do", ""], ["übernachten", "to stay overnight", ""], ["verstehen", "to understand", ""], ["(sich) vorstellen", "to introduce oneself / imagine", ""], ["warten", "to wait", ""], ["(sich) waschen", "to wash oneself / wash", ""], ["werden", "to become / will", ""], ["wiederholen", "to repeat", ""], ["wissen", "to know", ""], ["wohnen", "to live / reside", ""], ["wollen", "to want", ""], ["anfangen", "to begin / start", ""], ["weg sein", "to be gone / away", ""]]}], "notes": []}, {"title": "18 Adjectives and adverbs", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["alt", "old", ""], ["jung", "young", ""], ["neu", "new", ""], ["groß", "big / large / tall", ""], ["klein", "small", ""], ["hoch", "high / tall", ""], ["breit", "wide", ""], ["lang", "long", ""], ["kurz", "short", ""], ["weit", "far", ""], ["leicht", "light; easy", ""], ["schwer", "heavy; difficult", ""], ["gut", "good / well", ""], ["besser", "better", ""], ["best- / am besten", "best", ""], ["schön", "beautiful / nice", ""], ["richtig", "correct / right", ""], ["falsch", "wrong / false", ""], ["einfach", "simple / easy; one-way", ""], ["möglich", "possible", ""], ["wichtig", "important", ""], ["gültig", "valid", ""], ["ruhig", "quiet / calm", ""], ["laut", "loud", ""], ["leise", "quiet / softly", ""], ["schnell", "fast / quick", ""], ["langsam", "slow / slowly", ""], ["besetzt", "occupied; busy", ""], ["frei", "free; vacant", ""], ["fertig", "finished / ready", ""], ["kaputt", "broken", ""], ["bekannt", "known / famous", ""], ["fremd", "foreign / unfamiliar", ""], ["verboten", "forbidden", ""], ["geschlossen", "closed", ""], ["geöffnet", "open", ""], ["erlaubt", "allowed", ""], ["normal", "normal", ""], ["allein", "alone", ""], ["gern / gerne", "gladly; like to", ""], ["lieber", "rather / prefer", ""], ["viel", "much / a lot", ""], ["mehr", "more", ""], ["wenig", "little / few", ""], ["bisschen", "a little bit", ""], ["nächst-", "next", ""], ["letzt-", "last", ""], ["hell", "bright / light", ""], ["dunkel", "dark", ""], ["warm", "warm", ""], ["kalt", "cold", ""], ["froh", "happy / glad", ""], ["ganz", "quite / completely / whole", ""], ["lieb-", "dear / nice / beloved", ""]]}], "notes": []}, {"title": "19 Fixed A1 phrases and expressions", "tables": [{"caption": "", "headers": ["German", "Meaning", "Notes"], "rows": [["Achtung!", "Attention! / Watch out!", ""], ["Alles Gute!", "All the best!", ""], ["Auf Wiedersehen.", "Goodbye.", ""], ["Auf Wiederhören.", "Goodbye on the phone.", ""], ["Guten Morgen!", "Good morning!", ""], ["Hallo!", "Hello!", ""], ["Tschüss!", "Bye!", ""], ["Herzlich willkommen!", "Warm welcome!", ""], ["Viele Grüße", "Best regards / many greetings", ""], ["Mit freundlichen Grüßen", "Kind regards / Yours sincerely", ""], ["Vielen Dank!", "Many thanks!", ""], ["Herzlichen Dank!", "Many thanks / heartfelt thanks!", ""], ["Entschuldigen Sie bitte!", "Excuse me, please!", ""], ["Entschuldigung!", "Sorry! / Excuse me!", ""], ["Moment mal bitte!", "One moment please!", ""], ["Einen Moment bitte.", "One moment, please.", ""], ["Das macht nichts.", "That does not matter. / No problem.", ""], ["Das ist in Ordnung.", "That is okay / in order.", ""], ["Das geht nicht.", "That is not possible / That does not work.", ""], ["zum Beispiel / z. B.", "for example / e.g.", ""], ["Klar!", "Sure! / Of course!", ""], ["So, das war’s/wär’s!", "So, that’s it!", ""], ["Viel Glück!", "Good luck!", ""], ["Herzlichen Glückwunsch!", "Congratulations!", ""], ["Bitte nehmen Sie Platz!", "Please take a seat!", ""], ["Zahlen, bitte!", "The bill, please! / I would like to pay.", ""], ["Ich bin zu Hause.", "I am at home.", ""], ["Ich gehe zu Fuß.", "I go on foot / I walk.", ""], ["Ich habe keine Zeit.", "I have no time.", ""], ["Mir ist kalt.", "I am cold.", ""], ["Mir ist schlecht.", "I feel sick / unwell.", ""], ["Guten Tag, Frau/Herr ...", "Good day, Ms/Mr ...", ""], ["Sehr geehrte Damen und Herren", "Dear Sir or Madam", ""], ["Schönen Urlaub!", "Have a nice holiday!", ""], ["Ein gutes neues Jahr!", "Happy New Year!", ""], ["Gute Fahrt!", "Have a good trip!", ""], ["Gute Reise!", "Have a good journey!", ""], ["Gute Idee.", "Good idea.", ""], ["Das passt gut.", "That works / That fits well.", ""], ["Ist schon gut.", "It is all good / It is okay.", ""], ["Das macht 5 Euro 95.", "That comes to 5 euros 95.", ""], ["Das macht zusammen ...", "That comes to ... in total.", ""], ["Was möchten Sie trinken?", "What would you like to drink?", ""], ["Was kostet das?", "How much does that cost?", ""], ["Wie lange dauert der Film?", "How long does the film last?", ""], ["Können Sie mir helfen?", "Can you help me?", ""], ["Können Sie das bitte wiederholen?", "Can you repeat that, please?", ""], ["Sprechen Sie bitte leise/langsam.", "Please speak quietly/slowly.", ""], ["Wo ist die Toilette, bitte?", "Where is the toilet, please?", ""], ["Wo muss ich unterschreiben?", "Where do I have to sign?", ""], ["Wo muss ich aussteigen?", "Where do I have to get off?", ""], ["Ich freue mich auf den Urlaub.", "I am looking forward to the holiday.", ""], ["Ich liebe dich.", "I love you.", ""], ["Tut mir leid.", "I am sorry.", ""], ["der Dank", "thanks / gratitude", ""], ["das Glück", "luck / happiness", ""], ["der Glückwunsch", "congratulation", ""], ["die Hilfe", "help", ""], ["die Ordnung", "order / tidiness", ""], ["der Schluss", "end / conclusion", ""], ["die Vorsicht", "caution / care", ""], ["das Wiederhören", "goodbye on the phone / hearing again", ""], ["das Wiedersehen", "goodbye / seeing again", ""], ["willkommen", "welcome", ""]]}], "notes": []}];
+
+    const searchBox = document.getElementById('searchBox');
+    const voiceSelect = document.getElementById('voiceSelect');
+    const rateInput = document.getElementById('rate');
+    const rateValue = document.getElementById('rateValue');
+    const visibleCount = document.getElementById('visibleCount');
+    const statusEl = document.getElementById('status');
+    const pauseResumeBtn = document.getElementById('pauseResumeBtn');
+    const content = document.getElementById('content');
+    const nav = document.getElementById('sectionNav');
+
+    let visibleSpeakQueue = [];
+    let visibleMeaningQueue = [];
+    let playbackSessionId = 0;
+    let currentUtteranceResolver = null;
+    let lastSpokenText = '';
+    let lastSpokenOptions = { lang: 'de-DE', english: false };
+    let isPaused = false;
+    let isQueuePlaying = false;
+    let isSingleSpeaking = false;
+
+    function setStatus(message) {
+      statusEl.textContent = message;
+    }
+
+    function updatePauseButton() {
+      pauseResumeBtn.textContent = isPaused ? '▶ Continue' : '⏸ Pause';
+      pauseResumeBtn.classList.toggle('success', isPaused);
+      pauseResumeBtn.classList.toggle('warning', !isPaused);
+    }
+
+    function cancelPlayback(options = {}) {
+      const hard = options.hard === true;
+      playbackSessionId += 1;
+      isPaused = false;
+      isQueuePlaying = false;
+      isSingleSpeaking = false;
+      try {
+        const resolver = currentUtteranceResolver;
+        currentUtteranceResolver = null;
+        if (resolver) resolver();
+      } catch (e) {}
+      if (window.speechSynthesis) {
+        speechSynthesis.cancel();
+        try { speechSynthesis.resume(); } catch (e) {}
+      }
+      updatePauseButton();
+      if (hard) setStatus('Stopped.');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function encodeAttr(value) {
+      return encodeURIComponent(String(value ?? ''));
+    }
+
+    function renderInlineMarkdown(value) {
+      let safe = escapeHtml(value);
+      safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      safe = safe.replace(/`([^`]+)`/g, '<code>$1</code>');
+      return safe;
+    }
+
+    function cleanForSpeech(value) {
+      return String(value ?? '')
+        .replace(/\*\*/g, '')
+        .replace(/`/g, '')
+        // Excel dictionary entries often show plural endings after a comma, e.g. "die Uhr, -en".
+        // For pronunciation we keep the displayed word unchanged, but speak the natural base word.
+        .replace(/,\s*(?:-[A-Za-zÄÖÜäöüß]+|(?:der|die|das)\s+.+)$/i, '')
+        .replace(/\s*\(([^)]*)\)/g, ' $1')
+        .replace(/\bpl\.?\b/gi, '')
+        .replace(/\.(3,)/g, ' ')
+        .replace(/\.\.\./g, ' ')
+        .replace(/\s\/\s/g, ' oder ')
+        .replace(/\//g, ' oder ')
+        .replace(/\s+/g, ' ')
+        .replace(/^[-—]+$/, '')
+        .trim();
+    }
+
+    function cleanForEnglishSpeech(value) {
+      return String(value ?? '')
+        .replace(/\*\*/g, '')
+        .replace(/`/g, '')
+        .replace(/\.(3,)/g, ' ')
+        .replace(/\s\/\s/g, ' or ')
+        .replace(/\//g, ' or ')
+        .replace(/\s+/g, ' ')
+        .replace(/^[-—]+$/, '')
+        .trim();
+    }
+
+    function normalizeHeader(header) {
+      return String(header || '').trim().toLowerCase();
+    }
+
+    function isGermanColumn(header, index) {
+      const h = normalizeHeader(header);
+      return index === 0 || h === 'german' || h.includes('german verb');
+    }
+
+    function isMeaningColumn(header) {
+      const h = normalizeHeader(header);
+      return h === 'meaning' || h === 'english';
+    }
+
+    function getSpeakTargets(headers, row) {
+      const targets = [];
+      row.forEach((cell, index) => {
+        const text = cleanForSpeech(cell);
+        const header = headers[index] || '';
+        if (isGermanColumn(header, index) && text && text !== '—' && text !== '-') {
+          targets.push({ text, index });
+        }
+      });
+      return targets;
+    }
+
+    function getMeaningForRow(headers, row) {
+      for (let i = 0; i < headers.length; i += 1) {
+        if (isMeaningColumn(headers[i])) {
+          const meaning = cleanForEnglishSpeech(row[i] || '');
+          if (meaning && meaning !== '—' && meaning !== '-') return meaning;
+        }
+      }
+      return '';
+    }
+
+    function sectionId(index) {
+      return 'section-' + index;
+    }
+
+    function renderNav() {
+      nav.innerHTML = VOCAB_SECTIONS.map((section, index) =>
+        `<a href="#${sectionId(index)}">${escapeHtml(section.title)}</a>`
+      ).join('');
+    }
+
+    function rowMatches(row, query) {
+      if (!query) return true;
+      return row.some(cell => String(cell || '').toLowerCase().includes(query));
+    }
+
+    function render() {
+      const query = searchBox.value.trim().toLowerCase();
+      visibleSpeakQueue = [];
+      visibleMeaningQueue = [];
+      let shownRows = 0;
+      let html = '';
+
+      VOCAB_SECTIONS.forEach((section, sectionIndex) => {
+        let sectionHtml = '';
+        let sectionRows = 0;
+
+        section.tables.forEach((table) => {
+          const filteredRows = table.rows.filter(row => rowMatches(row, query));
+          if (!filteredRows.length) return;
+          sectionRows += filteredRows.length;
+          shownRows += filteredRows.length;
+
+          sectionHtml += '<div class="table-wrap"><table><thead><tr>';
+          table.headers.forEach(header => { sectionHtml += `<th>${escapeHtml(header)}</th>`; });
+          sectionHtml += '</tr></thead><tbody>';
+
+          filteredRows.forEach(row => {
+            const targets = getSpeakTargets(table.headers, row);
+            const primaryGerman = targets[0] ? targets[0].text : cleanForSpeech(row[0] || '');
+            const meaning = getMeaningForRow(table.headers, row);
+            if (primaryGerman) {
+              visibleSpeakQueue.push({ german: primaryGerman, meaning });
+              visibleMeaningQueue.push({ german: primaryGerman, meaning });
+            }
+
+            sectionHtml += '<tr>';
+            row.forEach((cell, cellIndex) => {
+              const safe = renderInlineMarkdown(cell);
+              const spoken = cleanForSpeech(cell);
+              const header = table.headers[cellIndex];
+              const canSpeakOwnText = isGermanColumn(header, cellIndex) && spoken && spoken !== '—' && spoken !== '-';
+              const canSpeakGermanFromMeaning = isMeaningColumn(header) && primaryGerman && primaryGerman !== '—' && primaryGerman !== '-';
+
+              if (canSpeakOwnText) {
+                sectionHtml += `<td class="speak-cell"><button type="button" class="cell-speak german-word" data-speak="${encodeAttr(spoken)}" aria-label="Play German pronunciation: ${escapeHtml(spoken)}">${safe}</button></td>`;
+              } else if (canSpeakGermanFromMeaning) {
+                sectionHtml += `<td class="speak-cell"><button type="button" class="cell-speak meaning-word" data-speak="${encodeAttr(primaryGerman)}" aria-label="Play German pronunciation: ${escapeHtml(primaryGerman)}">${safe}</button></td>`;
+              } else {
+                sectionHtml += `<td>${safe}</td>`;
+              }
+            });
+            sectionHtml += '</tr>';
+          });
+
+          sectionHtml += '</tbody></table></div>';
+        });
+
+        if (sectionRows > 0) {
+          const notesHtml = section.notes && section.notes.length
+            ? `<div class="notes">${section.notes.map(n => `<p>${renderInlineMarkdown(n)}</p>`).join('')}</div>`
+            : '';
+          html += `
+            <section class="vocab-section" id="${sectionId(sectionIndex)}">
+              <div class="section-header">
+                <h2 class="section-title">${escapeHtml(section.title)}</h2>
+                <div class="section-actions">
+                  <button class="secondary small" onclick="playSection(${sectionIndex})">▶ Play this section</button>
+                  <button class="small" onclick="playSectionWithMeaning(${sectionIndex})">▶ Section German → English</button>
+                  <button class="small" onclick="playSectionEnglishFirst(${sectionIndex})">▶ Section English → German</button>
+                </div>
+              </div>
+              ${sectionHtml}
+              ${notesHtml}
+            </section>`;
+        }
+      });
+
+      if (!shownRows) {
+        html = '<div class="panel empty">No matching vocabulary found.</div>';
+      }
+      visibleCount.textContent = shownRows;
+      content.innerHTML = html;
+    }
+
+    function getSortedVoices() {
+      const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+      const german = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('de'));
+      const other = voices.filter(v => !(v.lang && v.lang.toLowerCase().startsWith('de')));
+      return [...german, ...other];
+    }
+
+    function loadVoices() {
+      const voices = getSortedVoices();
+      voiceSelect.innerHTML = '';
+      if (!voices.length) {
+        const option = document.createElement('option');
+        option.textContent = 'No voices loaded yet';
+        voiceSelect.appendChild(option);
+        return;
+      }
+      voices.forEach((voice, index) => {
+        const option = document.createElement('option');
+        option.value = String(index);
+        option.textContent = `${voice.name} (${voice.lang})${voice.default ? ' — default' : ''}`;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    function selectedVoice() {
+      const voices = getSortedVoices();
+      return voices[Number(voiceSelect.value)] || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('de')) || voices[0] || null;
+    }
+
+    function selectedVoiceForLanguage(languagePrefix) {
+      const voices = getSortedVoices();
+      const prefix = String(languagePrefix || '').toLowerCase();
+      return voices.find(v => v.lang && v.lang.toLowerCase().startsWith(prefix)) || null;
+    }
+
+    function makeUtterance(text, options = {}) {
+      const lang = options.lang || 'de-DE';
+      const cleaned = options.english ? cleanForEnglishSpeech(text) : cleanForSpeech(text);
+      const utterance = new SpeechSynthesisUtterance(cleaned);
+      utterance.lang = lang;
+      utterance.rate = parseFloat(rateInput.value);
+      utterance.pitch = 1;
+      if (options.english) {
+        const englishVoice = selectedVoiceForLanguage('en');
+        if (englishVoice) utterance.voice = englishVoice;
+      } else {
+        const voice = selectedVoice();
+        if (voice) utterance.voice = voice;
+      }
+      return { utterance, cleaned };
+    }
+
+    function speakSingle(text, options = {}) {
+      const cleaned = options.english ? cleanForEnglishSpeech(text) : cleanForSpeech(text);
+      if (!cleaned || cleaned === '—' || cleaned === '-') return;
+      cancelPlayback({ hard: false });
+      isSingleSpeaking = true;
+      isPaused = false;
+      updatePauseButton();
+      lastSpokenText = cleaned;
+      lastSpokenOptions = { lang: options.lang || 'de-DE', english: options.english === true };
+      setStatus('Playing: ' + cleaned);
+
+      // Mobile browsers are more reliable if we cancel first, then start after a tiny delay.
+      setTimeout(() => {
+        if (!isSingleSpeaking) return;
+        const sessionId = playbackSessionId;
+        const { utterance } = makeUtterance(cleaned, lastSpokenOptions);
+        utterance.onend = () => {
+          if (sessionId === playbackSessionId) {
+            isSingleSpeaking = false;
+            isPaused = false;
+            updatePauseButton();
+            setStatus('Finished: ' + cleaned);
+          }
+        };
+        utterance.onerror = () => {
+          if (sessionId === playbackSessionId) {
+            isSingleSpeaking = false;
+            isPaused = false;
+            updatePauseButton();
+            setStatus('Could not play: ' + cleaned);
+          }
+        };
+        try { speechSynthesis.speak(utterance); } catch (e) { setStatus('Speech is not available in this browser.'); }
+      }, 90);
+    }
+
+    function testVoice() {
+      speakSingle('Guten Tag. Ich lerne Deutsch.', { lang: 'de-DE' });
+    }
+
+    async function waitIfPaused(sessionId) {
+      while (isPaused && sessionId === playbackSessionId) {
+        await new Promise(resolve => setTimeout(resolve, 120));
+      }
+    }
+
+    async function pauseAwareDelay(ms, sessionId) {
+      let remaining = Number(ms || 0);
+      while (remaining > 0 && sessionId === playbackSessionId) {
+        await waitIfPaused(sessionId);
+        if (sessionId !== playbackSessionId) break;
+        const chunk = Math.min(remaining, 80);
+        await new Promise(resolve => setTimeout(resolve, chunk));
+        if (!isPaused) remaining -= chunk;
+      }
+    }
+
+    function speakWait(text, sessionId, options = {}) {
+      return new Promise(async (resolve) => {
+        const cleaned = options.english ? cleanForEnglishSpeech(text) : cleanForSpeech(text);
+        if (!cleaned || cleaned === '—' || cleaned === '-') return resolve();
+        if (sessionId !== playbackSessionId) return resolve();
+        await waitIfPaused(sessionId);
+        if (sessionId !== playbackSessionId) return resolve();
+
+        lastSpokenText = cleaned;
+        lastSpokenOptions = { lang: options.lang || (options.english ? 'en-US' : 'de-DE'), english: options.english === true };
+        setStatus('Playing: ' + cleaned);
+
+        const { utterance } = makeUtterance(cleaned, lastSpokenOptions);
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          if (currentUtteranceResolver === finish) currentUtteranceResolver = null;
+          resolve();
+        };
+        currentUtteranceResolver = finish;
+        utterance.onend = finish;
+        utterance.onerror = finish;
+        try {
+          speechSynthesis.speak(utterance);
+        } catch (e) {
+          finish();
+        }
+      });
+    }
+
+    async function playQueue(queue, options = {}) {
+      if (!queue || !queue.length) {
+        setStatus('No words to play.');
+        return;
+      }
+      cancelPlayback({ hard: false });
+      playbackSessionId += 1;
+      const sessionId = playbackSessionId;
+      isQueuePlaying = true;
+      isPaused = false;
+      updatePauseButton();
+
+      const order = options.order || 'german-only';
+      const englishToGermanGapMs = Number(options.englishToGermanGapMs ?? 650);
+      const germanToEnglishGapMs = Number(options.germanToEnglishGapMs ?? 260);
+
+      for (const item of queue) {
+        if (sessionId !== playbackSessionId) break;
+        await waitIfPaused(sessionId);
+        if (sessionId !== playbackSessionId) break;
+
+        if (order === 'english-first') {
+          if (item.meaning) {
+            await speakWait(item.meaning, sessionId, { lang: 'en-US', english: true });
+            if (sessionId !== playbackSessionId) break;
+            await pauseAwareDelay(englishToGermanGapMs, sessionId);
+          }
+          if (sessionId !== playbackSessionId) break;
+          await speakWait(item.german, sessionId, { lang: 'de-DE' });
+        } else if (order === 'german-first') {
+          await speakWait(item.german, sessionId, { lang: 'de-DE' });
+          if (sessionId !== playbackSessionId) break;
+          if (item.meaning) {
+            await pauseAwareDelay(germanToEnglishGapMs, sessionId);
+            if (sessionId !== playbackSessionId) break;
+            await speakWait(item.meaning, sessionId, { lang: 'en-US', english: true });
+          }
+        } else {
+          await speakWait(item.german, sessionId, { lang: 'de-DE' });
+        }
+
+        if (sessionId !== playbackSessionId) break;
+        await pauseAwareDelay(330, sessionId);
+      }
+
+      if (sessionId === playbackSessionId) {
+        isQueuePlaying = false;
+        isPaused = false;
+        updatePauseButton();
+        setStatus('Finished playback.');
+      }
+    }
+
+    function getSectionQueue(sectionIndex) {
+      const section = VOCAB_SECTIONS[sectionIndex];
+      const query = searchBox.value.trim().toLowerCase();
+      const queue = [];
+      section.tables.forEach(table => {
+        table.rows.filter(row => rowMatches(row, query)).forEach(row => {
+          const targets = getSpeakTargets(table.headers, row);
+          const german = targets[0] ? targets[0].text : cleanForSpeech(row[0] || '');
+          const meaning = getMeaningForRow(table.headers, row);
+          if (german) queue.push({ german, meaning });
+        });
+      });
+      return queue;
+    }
+
+    function playSection(sectionIndex) {
+      playQueue(getSectionQueue(sectionIndex));
+    }
+
+    function playSectionWithMeaning(sectionIndex) {
+      playQueue(getSectionQueue(sectionIndex), { order: 'german-first' });
+    }
+
+    function playSectionEnglishFirst(sectionIndex) {
+      playQueue(getSectionQueue(sectionIndex), { order: 'english-first', englishToGermanGapMs: 650 });
+    }
+
+    function playVisible() {
+      playQueue(visibleSpeakQueue);
+    }
+
+    function playVisibleWithMeaning() {
+      playQueue(visibleMeaningQueue, { order: 'german-first' });
+    }
+
+    function playVisibleEnglishFirst() {
+      playQueue(visibleMeaningQueue, { order: 'english-first', englishToGermanGapMs: 650 });
+    }
+
+    function togglePauseResume() {
+      if (!window.speechSynthesis) return;
+      const hasSomethingToPause = isQueuePlaying || isSingleSpeaking || speechSynthesis.speaking || speechSynthesis.pending || isPaused;
+      if (!hasSomethingToPause) {
+        setStatus('Nothing is playing right now.');
+        return;
+      }
+      if (isPaused) {
+        isPaused = false;
+        try { speechSynthesis.resume(); } catch (e) {}
+        updatePauseButton();
+        setStatus('Continuing from the paused point...');
+      } else {
+        isPaused = true;
+        try { speechSynthesis.pause(); } catch (e) {}
+        updatePauseButton();
+        setStatus('Paused. Tap Continue to resume from this point.');
+      }
+    }
+
+    function repeatLast() {
+      if (!lastSpokenText) {
+        setStatus('No previous word to repeat yet.');
+        return;
+      }
+      speakSingle(lastSpokenText, lastSpokenOptions);
+    }
+
+    function stopSpeech() {
+      cancelPlayback({ hard: true });
+    }
+
+    function handleIndividualSpeak(event) {
+      const target = event.target.closest ? event.target.closest('[data-speak]') : null;
+      if (!target) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const now = Date.now();
+      const lastTap = Number(target.dataset.lastTap || 0);
+      if (now - lastTap < 420) return;
+      target.dataset.lastTap = String(now);
+      const text = decodeURIComponent(target.getAttribute('data-speak') || '');
+      speakSingle(text, { lang: 'de-DE' });
+    }
+
+    document.addEventListener('pointerup', handleIndividualSpeak, { passive: false });
+    document.addEventListener('click', (event) => {
+      const target = event.target.closest ? event.target.closest('[data-speak]') : null;
+      if (!target) return;
+      const now = Date.now();
+      const lastTap = Number(target.dataset.lastTap || 0);
+      if (now - lastTap < 420) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      handleIndividualSpeak(event);
+    }, { passive: false });
+
+    searchBox.addEventListener('input', () => { render(); });
+    rateInput.addEventListener('input', () => { rateValue.textContent = Number(rateInput.value).toFixed(1) + 'x'; });
+
+    renderNav();
+    render();
+    updatePauseButton();
+    loadVoices();
+    if (window.speechSynthesis) {
+      speechSynthesis.onvoiceschanged = loadVoices;
+    } else {
+      setStatus('Speech synthesis is not available in this browser.');
+    }
+  </script>
+</body>
+</html>
